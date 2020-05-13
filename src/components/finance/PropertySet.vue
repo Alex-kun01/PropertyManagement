@@ -13,38 +13,49 @@
           prop="comName"
           label="小区名称"
           align="center"
-          width="150px"
         ></el-table-column>
         <el-table-column
           prop="mercialHouse"
           label="商品房单价(元/月/平米)"
           align="center"
-          width="180px"
         ></el-table-column>
         <el-table-column
           prop="restHouse"
           label="安置房单价(元/月/平米)"
           align="center"
-          width="180px"
         ></el-table-column>
         <el-table-column
           prop="shopHouse"
           label="商铺单价(元/月/平米)"
           align="center"
-          width="180px"
         ></el-table-column>
         <el-table-column
           prop="garbageFee"
           label="垃圾处理费(元/户)"
           align="center"
-          width="180px"
+        ></el-table-column>
+        <el-table-column
+          prop="nonMotBig"
+          label="非机动车大车收费(元)"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nonMotSmall"
+          label="非机动车小车收费(元)"
+          align="center"
+        ></el-table-column> //parkId
+
+        <el-table-column
+          prop="parkId"
+          label="停车场ID"
+          align="center"
         ></el-table-column>
 
         <el-table-column align="center" prop="companyId" width="130" label="所属物业公司" >
         </el-table-column>
 
 
-        <el-table-column align="center" width="100" label="操作">
+        <el-table-column align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="saveNewPrice(scope.row)" type="primary" size="mini"
               ><i class="el-icon-edit"></i>编辑</el-button

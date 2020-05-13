@@ -26,15 +26,6 @@
           accept="excel"
         >
           <el-button @click="showTit" type="danger">导入房屋表格(excel)</el-button>
-
-          <!-- <template>
-          <el-popconfirm
-            title="这是一段内容确定删除吗？"
-          >
-            <el-button slot="reference">删除</el-button>
-          </el-popconfirm>
-          </template> -->
-
         </el-upload>
 
 

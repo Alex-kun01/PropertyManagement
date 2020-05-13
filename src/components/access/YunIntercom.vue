@@ -26,7 +26,12 @@
           </el-table-column>
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
-              <el-button @click="editClick(scope.row)" type="primary" size="mini">编辑</el-button>
+              <el-button @click="editClick(scope.row)" type="primary" size="mini">
+                <i class="el-icon-edit"></i>
+                编辑</el-button>
+              <el-button @click="seeClick(scope.row)" type="warning" size="mini">
+                <i class="el-icon-view"></i>
+                查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -197,6 +202,14 @@ export default {
           type: "danger"
         });
       }
+    },
+    // 跳转查看云对讲设备
+    seeClick(scope){
+      let data = {
+       token: scope.token,
+       key: scope.key
+      }
+      this.$router.push({ name: 'yunintercomsee', params: {data} })
     },
     // 每页显示条数变化
     handleSizeChange(newSize) {

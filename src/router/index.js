@@ -29,6 +29,12 @@ import CommunityActivity from '@/components/app/CommunityActivity'
 import YunIntercom from '@/components/access/YunIntercom'
 import AppFace from '@/components/access/AppFace'
 import FaceCamera from '@/components/access/FaceCamera'
+import ManeuverCar from '@/components/carset/ManeuverCar'
+import NotmaneuverCar from '@/components/carset/NotmaneuverCar'
+import YunIntercomsee from '@/components/access/YunIntercomsee'
+import OtherCamera from '@/components/hardware/OtherCamera'
+import SnapshotCamera from '@/components/hardware/SnapshotCamera'
+import MotorvhicleTool from '@/components/finance/MotorvhicleTool'
 
 
 Vue.use(Router)
@@ -167,7 +173,36 @@ export default new Router({
                     path: 'facecamera',
                     name: 'facecamera',
                     component: FaceCamera
-                }
+                },
+                {
+                    path: 'maneuvercar',
+                    name: 'maneuvercar',
+                    component: ManeuverCar
+                }, {
+                    path: 'notmaneuvercar',
+                    name: 'notmaneuvercar',
+                    component: NotmaneuverCar
+                },
+                {
+                    path: 'yunintercomsee',
+                    name: 'yunintercomsee',
+                    component: YunIntercomsee
+                },
+                {
+                    path: 'snapshotcamera',
+                    name: 'snapshotcamera',
+                    component: SnapshotCamera
+                },
+                {
+                    path: 'othercamera',
+                    name: 'othercamera',
+                    component: OtherCamera
+                },
+                {
+                    path: 'motorvhicletool',
+                    name: 'motorvhicletool',
+                    component: MotorvhicleTool
+                },
             ]
         },
 

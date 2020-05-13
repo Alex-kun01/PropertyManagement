@@ -68,6 +68,13 @@
                                 物业费设置
                             </el-menu-item>
                         </router-link>
+
+                        <router-link :to="{name: 'motorvhicletool'}">
+                            <el-menu-item index="1-5">
+                                <i class="el-icon-c-scale-to-original"></i>  
+                                机动车收费标准
+                            </el-menu-item>
+                        </router-link>
                             
                         
                     </el-submenu>
@@ -196,11 +203,43 @@
                                 </el-menu-item></router-link>
                                 
 
-                                <router-link :to="{name: 'facecamera'}"><el-menu-item index="6-6">
+                                <!-- <router-link :to="{name: 'facecamera'}"><el-menu-item index="6-6">
                                 <i class="el-icon-bank-card"></i>
                                 人脸抓拍
-                                </el-menu-item></router-link>
+                                </el-menu-item></router-link> -->
                         
+                    </el-submenu>
+
+                    <el-submenu index="7">
+                        <template slot="title">
+                            <i class="el-icon-truck"></i>
+                            <span>车辆管理</span>
+                        </template>
+                        <router-link :to="{name: 'maneuvercar'}"><el-menu-item index="7-1">
+                                <i class="el-icon-truck"></i>
+                                机动车管理
+                                </el-menu-item></router-link>
+                            <router-link :to="{name: 'notmaneuvercar'}"><el-menu-item index="7-2">
+                                <i class="el-icon-bicycle"></i>
+                                非机动车管理
+                                </el-menu-item></router-link>
+                            
+                    </el-submenu>
+
+                    <el-submenu index="8">
+                        <template slot="title">
+                            <i class="el-icon-connection"></i>
+                            <span>硬件管理</span>
+                        </template>
+                        <router-link :to="{name: 'snapshotcamera'}"><el-menu-item index="8-1">
+                                <i class="el-icon-camera-solid"></i>
+                                抓拍摄像头
+                                </el-menu-item></router-link>
+                            <!-- <router-link :to="{name: 'othercamera'}"><el-menu-item index="8-2">
+                                <i class="el-icon-camera"></i>
+                                其他摄像头
+                                </el-menu-item></router-link> -->
+                            
                     </el-submenu>
 
 
