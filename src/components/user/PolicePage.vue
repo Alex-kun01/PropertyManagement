@@ -35,7 +35,7 @@
             <el-table-column align="center" width="200" label="操作">
                 <template slot-scope="scope">
                     <el-button @click="openPolice(scope.row)" type="primary" size="mini"><i class="el-icon-edit"></i>编辑</el-button>
-                    <el-button @click="deletePolice(scope.row)" type="danger" size="mini"><i class="el-icon-delete"></i>删除</el-button>
+                    <!-- <el-button @click="deletePolice(scope.row)" type="danger" size="mini"><i class="el-icon-delete"></i>删除</el-button> -->
                 </template>
             </el-table-column>
 
@@ -76,6 +76,20 @@
                     prop="pPassword"
                     >
                         <el-input type="pPassword" v-model="addpoliceForm.pPassword" autocomplete="off"></el-input>
+                    </el-form-item>
+                        
+                    <el-form-item
+                    label="小区名"
+                    prop=""
+                    >
+                       <el-select v-model="addpvalue" placeholder="请选择">
+                            <el-option
+                            v-for="item in addpolicecomName"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
 
                 </el-form>
@@ -132,7 +146,8 @@ export default {
             isAddPolice: false, // 新增保安对话框显示
             addpoliceForm: { // 新增保安数据
                 pAccount: '',
-                pPassword: ''
+                pPassword: '',
+                comName: ''
             },
             // 新增保安填写规则
             addpoliceRules: {
@@ -144,6 +159,8 @@ export default {
                    { required: true, message: '请您填写密码', trigger: 'blur' },
                 ]
             },
+            addpvalue: '',
+            addpolicecomName: [], // 小区列表
             // 修改保安信息对话框显示
             isEditPolice: false,
             // 修改保安信息数据
@@ -163,6 +180,7 @@ export default {
     },
     mounted() {
         this.getData();
+        this.getComName();
     },
     computed: {
     },
@@ -205,6 +223,8 @@ export default {
         addPoliceOk(formName){
             this.$refs[formName].validate((valid) => {
             if (valid) {
+                this.addpoliceForm.comName = this.addpvalue
+                console.log(this.addpoliceForm)
                 this.$http.post('/policeUser/addPolice', null, { params: this.addpoliceForm }).then(res => {
                     this.getData();
                     this.isAddPolice = false;
@@ -213,6 +233,7 @@ export default {
                     type: 'success'
                 })
                  this.$refs[formName].resetFields();
+                    this.addpvalue = ''
                 })
             } else {
                 this.$message({
@@ -267,6 +288,24 @@ export default {
                         })
                     }
                 })
+        },
+        // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.get('/house/changeCom')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.communityName,
+                    label: item.communityName
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName = dataArr
+            console.log('小区列表', this.addpolicecomName )
         },
         // 取消修改保安信息
         editPoliceNo(){ 

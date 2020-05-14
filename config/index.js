@@ -11,24 +11,21 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
+
             // '/': {
-            //     target: 'https://47.105.162.15:802',
-            //     target: '192.168.31.111', // 最新迁移服务器
+            //     target: 'http://www.hbzayun.com',
             //     ws: false,
             //     changeOrigin: true,
+            //     // bypass: function(req, res, proxyOptions) {
+            //     //     req.headers.referer = 'http://www.hbzayun.com',
+            //     //         req.headers.host = 'www.hbzayun.com'
+            //     // },
             //     pathRewrite: {
             //         '^/': ''
             //     }
             // },
-            // '/upImg': {
-            //     target: 'http://www.hbzayun.com',
-            //     target: 'http://localhost:8080/', // 最新迁移服务器
-            //     ws: false,
-            //     changeOrigin: true,
-            //     pathRewrite: {
-            //         '^/upImg': ''
-            //     }
-            // },
+
+
         },
 
         // Various Dev Server settings

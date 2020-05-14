@@ -10,7 +10,7 @@ axios.defaults.baseURL = 'http://47.108.80.252:8090'
     // axios.defaults.baseURL = 'http://192.168.31.111:8090'  服务器地址 http://47.108.80.252:8090
     // axios.defaults.baseURL = 'http://www.hbzayun.com'
 import store from './store/index'
-
+import qs from 'qs'
 // 全局守卫
 router.beforeEach((to, from, next) => {
 
@@ -31,6 +31,7 @@ router.beforeEach((to, from, next) => {
 
 Vue.use(ElementUI)
 Vue.prototype.$http = axios
+Vue.prototype.$qs = qs
 
 Vue.config.productionTip = false
 

@@ -243,7 +243,7 @@
         </el-form-item>
 
         <el-form-item label="广告屏" prop="atId">
-          <el-select v-model="addAdFrom.atId" placeholder="活动区域">
+          <el-select v-model="addAdFrom.atId" placeholder="选择广告屏">
             <el-option label="大屏" value="1"></el-option>
             <el-option label="中屏" value="2"></el-option>
             <el-option label="小屏" value="3"></el-option>
@@ -276,11 +276,9 @@ export default {
       eqList: [],
       isAddAd: false,
       addAdFrom: {
-        key: "e098214294ad13f23e16ae5ebecf970d",
-        token: "1bbd886460827015e5d605ed44252251",
         baseFile: "",
-        advertiseName: "测试",
-        atId: 3
+        advertiseName: "",
+        atId: ''
       },
       addAdRules: {
         // baseFile: [
@@ -302,7 +300,31 @@ export default {
 
     // 删除广告
     delAdAPP(item){
-    console.log(item,'选中广告_app')
+      let _this = this
+     let obj3 = this.$qs.stringify({adId: item.adId})
+
+    this.$confirm('该操作将永久删除该条信息,是否继续？').then(()=>{
+        console.log('xxx')
+            this.$http.post('http://www.hbzayun.com/ACSystem/deleteSingleAds',obj3,{params: {
+              key: "e098214294ad13f23e16ae5ebecf970d",
+              token: "1bbd886460827015e5d605ed44252251"
+            }}).then(res=>{
+              console.log('删除广告返回的数据', res)
+              if(res.data.code == 200){
+                _this.$message.success(res.data.extend.data)
+                _this.getDataApp()
+              }else{
+                _this.$message.error(res.data.extend.data)
+              }
+            })
+
+            }).catch(()=>{
+                this.$message({
+                    message: '已取消',
+                    type: 'info'
+                })
+            })
+     
     },
 
 
@@ -409,12 +431,30 @@ export default {
     AddAdOk(formName) {
       let _this = this
       //
-      this.$refs[formName].validate(valid => {
+        let obj = this.addAdFrom
+        console.log(obj,'1')
+
+        let obj3 = this.$qs.stringify(obj)
+
+        console.log(obj3,'2')
+
+
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          this.$http.post("http://www.hbzayun.com/ACSystem/addByBase", null, { params: this.addAdFrom })
-            .then(res => {
-              console.log(res);
-            })
+          let value = {
+            key: "e098214294ad13f23e16ae5ebecf970d",
+            token: "1bbd886460827015e5d605ed44252251",
+          }
+         const {data: res} = await this.$http.post("http://www.hbzayun.com/ACSystem/addByBase",obj3, {params: value} )
+          console.log('添加返回数据', res)
+          if(res.code == 200 ){
+            _this.isAddAd = false
+            _this.$message.success(res.extend.data)
+            _this.getDataApp()
+          } else {
+            _this.isAddAd = false
+            _this.$message.error(res.extend.data)
+          }
 
         } else {
           this.$message({
@@ -431,13 +471,14 @@ export default {
       let fileList = document.querySelector("#imgLocal").files;
       let file = fileList[0];
       console.log(file);
+      // _this.addAdFrom.baseFile = file
 
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.addEventListener("load", function() {
         // 读取完成
         let res = fileReader.result; // res是base64格式的图片
-        console.log("base64格式",res)
+        // console.log("base64格式",res)
         _this.addAdFrom.baseFile = res;
 
         console.log(_this.addAdFrom);

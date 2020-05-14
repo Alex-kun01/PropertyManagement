@@ -117,7 +117,7 @@
                 </el-form-item>
 
                 <el-form-item label="人脸类型" prop="faceType">
-                    <el-select v-model="addFaceIdFrom.faceType" placeholder="活动区域">
+                    <el-select v-model="addFaceIdFrom.faceType" placeholder="选择人脸类型">
                         <el-option label="白名单" value="1"></el-option>
                         <el-option label="黑名单" value="2"></el-option>
                     </el-select>
@@ -132,7 +132,7 @@
                 </el-form-item>
 
                 <el-form-item label="性别" prop="sex">
-                    <el-select v-model="addFaceIdFrom.sex" placeholder="活动区域">
+                    <el-select v-model="addFaceIdFrom.sex" placeholder="选择性别">
                         <el-option label="男" value="1"></el-option>
                         <el-option label="女" value="2"></el-option>
                     </el-select>
@@ -161,11 +161,11 @@ export default {
             isAddFace: false,
             addFaceIdFrom: { // 新增face
                 faceImg: '',
-                userName: '坤坤',
-                faceType: '1', //人脸类型，1-白名单，2-黑名单
-                phone: '17683059017',
-                eNumStr: "676788917790010100003",
-                sex: '1', // 男1，女2
+                userName: '',
+                faceType: '', //人脸类型，1-白名单，2-黑名单
+                phone: '',
+                eNumStr: "",
+                sex: '', // 男1，女2
             },
             addFaceIdRules: { // 新增填写规则
                 faceImg: [{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
@@ -287,17 +287,36 @@ export default {
         // 添加人脸
         async addFaceOk(formName){ // 设备号 676788917790010200002
 
+        let _this = this
             const staticobj = {
                 key:'e098214294ad13f23e16ae5ebecf970d',
                 token:'1bbd886460827015e5d605ed44252251'
               }
-            const data = Object.assign(staticobj, this.addFaceIdFrom)
-            console.log('后',data)
+            // let data = this.$qs.stringify(this.addFaceIdFrom)
+            let formData = new FormData()
 
-           const { data:res } = await this.$http.post('/upImg/ACSystem/openApi/addFace', null,
-            { params: data })
+            formData.append('faceImg', this.addFaceIdFrom.faceImg)
+            formData.append('userName', this.addFaceIdFrom.userName)
+            formData.append('faceType', this.addFaceIdFrom.faceType)
+            formData.append('phone', this.addFaceIdFrom.phone)
+            formData.append('eNumStr', this.addFaceIdFrom.eNumStr)
+            formData.append('sex', this.addFaceIdFrom.sex)
+            
+
+            console.log('处理后',formData)
+            // return
+
+           const { data:res } = await this.$http.post('http://www.hbzayun.com/ACSystem/openApi/addFace', formData, {params: staticobj})
 
             console.log('添加人脸返回数据',res)
+            if(res.code == 200){
+                _this.$message.success(res.extend.data)
+                _this.getData()
+                _this.isAddFace = false
+            }else{
+                _this.$message.error(res.extend.data)
+                 _this.isAddFace = false
+            }
 
             
            
@@ -309,18 +328,18 @@ export default {
             let fileList = document.querySelector('#imgLocal').files
             let file = fileList[0]
             console.log('file', file)
-            // this.addFaceIdFrom.faceImg = file
+            this.addFaceIdFrom.faceImg = file
 
             
-            const fileReader = new FileReader()
-            fileReader.readAsDataURL(file) 
-            fileReader.addEventListener('load', function() {
-                // 读取完成
-                let res = fileReader.result // res是base64格式的图片
-                _this.addFaceIdFrom.faceImg = res
+            // const fileReader = new FileReader()
+            // fileReader.readAsDataURL(file) 
+            // fileReader.addEventListener('load', function() {
+            //     // 读取完成
+            //     let res = fileReader.result // res是base64格式的图片
+            //     _this.addFaceIdFrom.faceImg = res
                 
-                console.log('base64格式',res)
-            })
+            //     console.log('base64格式',res)
+            // })
         },
         handleRemove(file, fileList) {
       // console.log(file, fileList);
