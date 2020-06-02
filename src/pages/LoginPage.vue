@@ -21,7 +21,8 @@ export default {
     data () {
         return {
             userName: '',
-            password: ''
+            password: '',
+            Authority: [], //权限
         }
     },
     created(){
@@ -40,15 +41,25 @@ export default {
         login(){
             if(this.userName && this.password){
                 this.$http.post('/sysUser/sysLogin', null, { params: {userName: this.userName, password: this.password} }).then(res => {
-                console.log(res)
-                if(res.data.code == 1000) {
+                console.log(res,res.data.code, 'ppp')
+                if(res.data.code == 1003 || res.data.code == 1001) {
+                    let arr = res.data.data.sysMenus || []
+                    let newArr = []
+                    arr.forEach(item =>{
+                        newArr.push(item.menuName)
+                    })
+                    this.Authority = newArr
+                    window.localStorage.setItem('authority',newArr)
+                     window.localStorage.setItem('role',res.data.data.role)
+
+                    console.log('列表返回的数据',this.Authority)
                     this.$message({
                         message: '登陆成功',
                         type: 'success'
                     })
                     window.localStorage.setItem('userName', this.userName)
                     window.localStorage.setItem('password', this.password)
-                    this.$router.push('/index/ovnerpage')
+                    this.$router.push('/index/firstshow')
                 }else{
                     this.$message({
                         message: res.data.msg,

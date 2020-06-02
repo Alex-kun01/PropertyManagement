@@ -35,7 +35,9 @@
                     >
                     
 
-                    <el-submenu index="1">
+                    <el-submenu index="1"
+                    v-if="authority.includes('财务管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-s-check"></i>
                             <span>财务管理</span>
@@ -79,7 +81,9 @@
                         
                     </el-submenu>
 
-                    <el-submenu index="2">
+                    <el-submenu index="2"
+                    v-if="authority.includes('用户管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-user-solid"></i>
                             <span>用户管理</span>
@@ -95,7 +99,9 @@
                         
                     </el-submenu>
 
-                    <el-submenu index="3">
+                    <el-submenu index="3"
+                    v-if="authority.includes('房屋管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-s-home"></i>
                             <span>房屋管理</span>
@@ -114,7 +120,9 @@
                             </el-menu-item></router-link>
                     </el-submenu>
 
-                    <el-submenu index="4">
+                    <el-submenu index="4"
+                     v-if="authority.includes('系统消息') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-cpu"></i>
                             <span>系统消息</span>
@@ -127,7 +135,9 @@
                         
                     </el-submenu>
 
-                    <el-submenu index="5">
+                    <el-submenu index="5"
+                    v-if="authority.includes('APP管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-mobile-phone"></i>
                             <span>APP管理</span>
@@ -142,12 +152,6 @@
                                 <i class="el-icon-s-opportunity"></i>
                                 保安轮播图
                                 </el-menu-item></router-link>
-
-                            <!-- <router-link :to="{name: 'adlist'}"><el-menu-item index="5-3">
-                                <i class="el-icon-magic-stick
-"></i>
-                                广告列表
-                                </el-menu-item></router-link> -->
 
                             <router-link :to="{name: 'editionpage'}"><el-menu-item index="5-4">
                                 <i class="el-icon-news"></i>
@@ -171,7 +175,9 @@
                                 
                     </el-submenu>
 
-                    <el-submenu index="6">
+                    <el-submenu index="6"
+                    v-if="authority.includes('门禁管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-message-solid"></i>
                             <span>门禁管理</span>
@@ -201,16 +207,14 @@
                                 <i class="el-icon-bank-card"></i>
                                 人脸审核
                                 </el-menu-item></router-link>
-                                
-
-                                <!-- <router-link :to="{name: 'facecamera'}"><el-menu-item index="6-6">
-                                <i class="el-icon-bank-card"></i>
-                                人脸抓拍
-                                </el-menu-item></router-link> -->
                         
                     </el-submenu>
 
-                    <el-submenu index="7">
+                    <el-submenu index="7"
+                    v-if="authority.includes('车辆管理') || role == 1"
+
+
+                    >
                         <template slot="title">
                             <i class="el-icon-truck"></i>
                             <span>车辆管理</span>
@@ -226,7 +230,9 @@
                             
                     </el-submenu>
 
-                    <el-submenu index="8">
+                    <el-submenu index="8"
+                     v-if="authority.includes('硬件管理') || role == 1"
+                    >
                         <template slot="title">
                             <i class="el-icon-connection"></i>
                             <span>硬件管理</span>
@@ -235,10 +241,38 @@
                                 <i class="el-icon-camera-solid"></i>
                                 抓拍摄像头
                                 </el-menu-item></router-link>
-                            <!-- <router-link :to="{name: 'othercamera'}"><el-menu-item index="8-2">
+                            <router-link :to="{name: 'othercamera'}"><el-menu-item index="8-2">
                                 <i class="el-icon-camera"></i>
                                 其他摄像头
-                                </el-menu-item></router-link> -->
+                                </el-menu-item></router-link>
+                            
+                    </el-submenu>
+
+                    <el-submenu index="9"
+                    v-if="authority.includes('权限管理') || role == 1"
+                    >
+                        <template slot="title">
+                            <i class="el-icon-postcard"></i>
+                            <span>权限管理</span>
+                        </template>
+                        <router-link :to="{name: 'companyset'}"><el-menu-item index="9-1">
+                                <i class="el-icon-takeaway-box"></i>
+                                公司管理
+                                </el-menu-item></router-link>
+                        <router-link :to="{name: 'menuset'}"><el-menu-item index="9-2">
+                            <i class="el-icon-document-copy"></i>
+                            菜单管理
+                            </el-menu-item></router-link>  
+
+                        <router-link :to="{name: 'systemuser'}"><el-menu-item index="9-3">
+                            <i class="el-icon-files"></i>
+                            系统用户
+                            </el-menu-item></router-link>
+
+                            <router-link :to="{name: 'rolesset'}"><el-menu-item index="9-4">
+                            <i class="el-icon-attract"></i>
+                            角色管理
+                            </el-menu-item></router-link>
                             
                     </el-submenu>
 
@@ -258,10 +292,21 @@ export default {
         return {
             number: '',
             isFold: false, // 菜单是否折叠
+            authority: [], //  权限
+            role: 1, // 超级管理员
         }
     },
     mounted() {
         this.number = window.localStorage.getItem('userName')
+        // 获取权限数据
+       let arr = window.localStorage.getItem('authority')
+       let newRole = window.localStorage.getItem('role')
+       this.role = newRole
+       console.log('超级管理员', this.role)
+       let newArr = arr.split(',')
+        this.authority = newArr
+       console.log('获取到的权限数据', newArr)
+       console.log('查看权限是否存在',newArr.includes('财务管理'))
     },
     methods: {
         // 选中菜单
@@ -281,6 +326,8 @@ export default {
             this.$confirm('确认退出吗？').then(() =>{
                 window.localStorage.removeItem('userName')
                 window.localStorage.removeItem('password')
+                window.localStorage.removeItem('authority')
+                window.localStorage.removeItem('role')
                 this.$router.push({path: '/'})
             }).catch(() =>{
                 this.$message({

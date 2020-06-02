@@ -36,6 +36,7 @@
               <span style="color: red;" v-if="scope.row.state == 2">已拒绝</span>
             </template>
           </el-table-column>
+          <el-table-column prop="refuseReason" label="拒绝理由" align="center"></el-table-column>
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-button v-if="scope.row.state == 0" @click="editClick(scope.row)" type="primary" size="mini">审核</el-button>
@@ -83,7 +84,6 @@
           </el-form-item>
 
           <el-form-item label="上传图片" prop="img">
-            <!-- <el-input type="img" v-model="addYunFrom.img" autocomplete="off"></el-input> -->
           <el-upload
             class="upload-demo"
             action="http://47.108.80.252:8090/uploads"  
@@ -139,6 +139,10 @@
             </el-select>
           </el-form-item>
 
+          <el-form-item v-if="editYunFrom.state == 2" label="拒绝理由" prop="reason">
+            <el-input v-model="editYunFrom.reason" autocomplete="off"></el-input>
+          </el-form-item>
+
 
         </el-form>
 
@@ -153,6 +157,7 @@
   </div>
 </template>
 <script>
+require('../../assets/base64')
 export default {
   data() {
     return {
@@ -164,6 +169,11 @@ export default {
       total: 0, // 总共条数
       targetData: [], // 渲染数据
       isAddYun: false, // 是否展示新增对话框
+      shenheForm: {
+
+      },
+      comName: '', //小区名
+      scope: '', //选中 数据
       addYunFrom: {
         // 新增数据
         userId: '',
@@ -197,7 +207,8 @@ export default {
       isEditYun: false, // 编辑
       editYunFrom: {
         id: '',
-        state: ''
+        state: '',
+        reason: ''
       },
       editYunRules: {
         //新增数据规则
@@ -211,46 +222,64 @@ export default {
     };
   },
   mounted() {
-    this.getData();
+    // this.getData();
+    this.gteDateTest(this.current, this.size)
   },
   methods: {
-    async getData() { //http://192.168.31.111:8090
-        // const { data: res } = await this.$http.post('/faceApply/lookAllApply',null,{ params: {
 
-        // } })
-        // console.log('app人脸管理', res)
-
-      const { data: res } = await this.$http.post(
-        "/faceApply/lookAllApply",
-        null,
-        {
-          params: {
-            current: this.current,
-            size: this.size
-          }
-        }
-      );
-      console.log("appface数据", res);
-      if (res.code == 1002) {
-        this.targetData = res.data.records;
-        this.total = res.data.total;
-        // this.current = res.data.current;
-      } else {
-        this.$message({
-          message: "服务器请求出错",
-          type: "danger"
-        });
+    async gteDateTest(current,size){
+      let datat = {
+        current,
+        size
       }
-    },
+      console.log('传参', datat)
+           const {data:res} = await this.$http.post('/faceImg/lookAllImg',null, {params:datat})
+           console.log('test',res)
+           if (res.code == 1002) {
+            this.targetData = res.data.records;
+            this.total = res.data.total;
+          } else {
+            this.$message({
+              message: "服务器请求出错",
+              type: "danger"
+            });
+          }
+        },
+    // async getData() {
+
+    //   const { data: res } = await this.$http.post(
+    //     "/faceApply/lookAllApply",
+    //     null,
+    //     {
+    //       params: {
+    //         current: this.current,
+    //         size: this.size
+    //       }
+    //     }
+    //   );
+    //   console.log("appface数据", res);
+    //   if (res.code == 1002) {
+    //     this.targetData = res.data.records;
+    //     this.total = res.data.total;
+    //     // this.current = res.data.current;
+    //   } else {
+    //     this.$message({
+    //       message: "服务器请求出错",
+    //       type: "danger"
+    //     });
+    //   }
+    // },
     // 每页显示条数变化
     handleSizeChange(newSize) {
+      console.log('newSize',newSize)
       this.size = newSize;
-      this.getData();
+      this.gteDateTest(this.current, this.size)
     },
     // 当前页变化
     handleCurrentChange(newCurrent) {
+      console.log('newCurrent',newCurrent)
       this.current = newCurrent;
-      this.getData();
+      this.gteDateTest(this.current, this.size)
     },
     addYunClose() {
       this.isAddYun = false;
@@ -272,12 +301,20 @@ export default {
    addYunOk(formName) {
        let _this = this
         console.log(this.addYunFrom) 
+        var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
+
+        if (!myreg.test(this.addYunFrom.phone)){
+            this.$message.error('请输入正确的手机号')
+            return
+        }
+
+
         this.$refs[formName].validate( async valid => {
         if (valid) {
 
 
          console.log(this.addYunFrom)
-         const { data: res } = await _this.$http.post("/faceApply/appAddFace",null, { params: this.addYunFrom })
+         const { data: res } = await _this.$http.post("/faceImg/appAddFace",null, { params: this.addYunFrom })
          console.log(res)
          if(res.code == 1000){
              this.$message({
@@ -286,7 +323,7 @@ export default {
              })
              this.fileList = []
              this.isAddYun = false
-             this.getData()
+             this.gteDateTest()
              this.$refs[formName].resetFields();
          }
           
@@ -300,24 +337,99 @@ export default {
         }
       });
     },
+    // 处理人脸添加
+    faceAddNum(){
+      console.log('我执行了')
+      this.getBaseUlr(this.scope.img, baseUrl =>{
+          
+          let newBaseUrl = 'data:image/jpeg;base64,' + baseUrl
+          // console.log(newBaseUrl)x
+          let file = this.changeFile(newBaseUrl, 'imgname')
+          console.log('转换的file文件', file)
+
+            this.getcomEnum(eNumStr =>{
+              this.shenheForm = {
+                userName: this.scope.userName,
+                faceType: 1,
+                phone: this.scope.phone,
+                sex: this.scope.sex,
+                faceImg: file,
+                eNumStr: null
+              }
+              const staticobj = {
+                key:'e098214294ad13f23e16ae5ebecf970d',
+                token:'1bbd886460827015e5d605ed44252251'
+            }
+            
+
+              eNumStr.forEach(async item =>{
+                console.log('查看原数据', this.shenheForm)
+                this.shenheForm.eNumStr = item
+                console.log('查看原数据', this.shenheForm)
+                let formData = new FormData()
+                
+
+                for(let key in this.shenheForm){
+                    formData.append(key, this.shenheForm[key]) 
+                }
+                console.log('查看所需的数据', formData)
+
+                // 拿到人脸数据处理
+                const { data:res } = await this.$http.post('http://www.hbzayun.com/ACSystem/openApi/addFace', formData, {params: staticobj})
+                console.log('请求后返回的数据', res)
+
+              })
+            
+          }) 
+        })
+    },
     // 编辑提交
     editYunOk(formName){
         this.$refs[formName].validate( async valid => {
         if (valid) {
-            console.log(this.isEditYun)
-            const { data: res } = await this.$http.post('/faceApply/checkFace', null, { params: this.editYunFrom })
-            console.log('审核返回数据', res)
-            if(res.code == 1000){
-              this.$message({
-                message: '审核成功',
-                type: 'success'
-              })
-              this.isEditYun = false
-              this.getData()
-             this.$refs[formName].resetFields();
+            console.log('通过',this.editYunFrom)
+           if(this.editYunFrom.state == '2' && this.editYunFrom.reason == ''){
+              this.$message('请填写拒绝理由')
+               return
             }else{
-              this.$message('审核失败')
+              const {data:res} = await this.$http.post('/faceImg/aggreAddFace',null, {params: this.editYunFrom})
+               console.log('审核返回数据', res)
+               if(res.code === 1000){
+                 this.$message({
+                    message: '审核成功',
+                    type: 'success'
+                  })
+                 this.isEditYun = false
+                 this.gteDateTest()
+                 this.$refs[formName].resetFields();
+               }else{
+                 this.$message('审核失败')
+                 this.isEditYun = false
+               }
             }
+            
+           
+           
+
+
+            // if(this.editYunFrom.state == '1'){
+            //   // 通过处理添加人脸
+            //   this.faceAddNum()
+            // }
+            // // return
+            // const { data: res } = await this.$http.post('/faceApply/checkFace', null, { params: this.editYunFrom })
+            // console.log('审核返回数据', res)
+            // if(res.code == 1000){
+            //   this.$message({
+            //     message: '审核成功',
+            //     type: 'success'
+            //   })
+            //   this.isEditYun = false
+            //   this.gteDateTest()
+            //  this.$refs[formName].resetFields();
+            // }else{
+            //   this.$message('审核失败')
+            // }
         } else {
           this.$message({
             message: "Error",
@@ -327,8 +439,49 @@ export default {
         }
       });
     },
+    //根据小区名查询设备编号
+   async getcomEnum(callBack){
+      const {data:res} = await this.$http.post('/faceImg/lookEnum', null, {params: {comName: this.comName}})
+      console.log('获取小区设备编号', res)
+      if(res.code == 1002){
+        callBack(res.data)
+      }
+    },
+    // 根据url获取base64数据流
+   async getBaseUlr(url,callBack){
+      const {data:res} = await this.$http.post('/faceImg/base64', null, {params: {url:url}})
+      console.log('url转base64格式返回数据', res)
+      callBack(res.data)
+    },
+    // 将base64字符串转换成文件（file）
+    changeFile(dataurl, filename){
+      var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+          u8arr = new Uint8Array(n);
+      while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    },
+    // 转换formData
+    changeFormData(obj){
+      let formData = new FormData()
+      // formData.append('faceImg', this.addFaceIdFrom.faceImg)
+      for(let key in obj){
+        formData.append(key.toString, obj[key])
+        
+      }
+      console.log('formData', formData)
+      return formData
+    },
+    //审核按钮
     editClick(scope){
         console.log('scope', scope)
+        // 准备人脸添加接口依赖数据
+        this.comName = scope.proName
+        this.scope = scope
         this.editYunFrom.id = scope.id
         this.isEditYun = true
     },

@@ -74,6 +74,12 @@
           <el-form-item label="小区名" prop="communityName">
             <el-input type="communityName" v-model="addYunFrom.communityName" autocomplete="off"></el-input>
           </el-form-item>
+
+          <el-form-item label="呼叫号码" prop="callNum">
+            <el-input type="callNum" v-model="addYunFrom.callNum" autocomplete="off"></el-input>
+          </el-form-item>
+
+
         </el-form>
 
         <span slot="footer" class="dialog-footer">
@@ -107,6 +113,11 @@
           <el-form-item label="小区名" prop="communityName">
             <el-input type="communityName" v-model="editYunFrom.communityName" autocomplete="off"></el-input>
           </el-form-item>
+          
+          <el-form-item label="呼叫号码" prop="callNum">
+            <el-input type="callNum" v-model="editYunFrom.callNum" autocomplete="off"></el-input>
+          </el-form-item>
+          
         </el-form>
 
         <span slot="footer" class="dialog-footer">
@@ -134,7 +145,8 @@ export default {
         key: "",
         token: "",
         location: "",
-        communityName: ""
+        communityName: "",
+        callNum: ''
       },
       addYunRules: {
         //新增数据规则
@@ -149,6 +161,9 @@ export default {
         ],
         communityName: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        callNum: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ]
       },
       isEditYun: false, // 编辑
@@ -157,7 +172,8 @@ export default {
             key: "",
             token: "",
             location: "",
-            communityName: ""
+            communityName: "",
+            callNum: ''
       },
       editYunRules: {
         //新增数据规则
@@ -171,6 +187,9 @@ export default {
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
         communityName: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        callNum: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ]
       },

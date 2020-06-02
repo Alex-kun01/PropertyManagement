@@ -92,13 +92,26 @@
         >
 
             <el-form :model="addFaceIdFrom"  :rules='addFaceIdRules' ref="addFaceIdRef" label-width="100px" class="addpolice_from">
+                
+                <el-form-item
+                    label="小区名"
+                    prop=""
+                    >
+                       <el-select v-model="addpvalue" placeholder="请选择">
+                            <el-option
+                            v-for="item in addpolicecomName"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
+                        </el-select>
+                </el-form-item>
 
-                <el-form-item label="人脸照片" prop="faceImg">
-                    <input type="file" @change="inpChange" multiple id="imgLocal" accept="image/*" />
-                    <!--   http://47.108.80.252:8090/uploads -->
-                    <!-- <el-upload
+                <el-form-item label="人脸照片" prop="img">
+                    <!-- <input type="file" @change="inpChange" multiple id="imgLocal" accept="image/*" /> -->
+                    <el-upload
                         class="upload-demo"
-                        action="https://jsonplaceholder.typicode.com/posts/"   
+                        action="http://47.108.80.252:8090/uploads"  
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :on-success="handSuccess"
@@ -106,10 +119,9 @@
                         multiple
                         :limit="1"
                         :on-exceed="handleExceed"
-                        :file-list="fileList"
-                        >
+                        :file-list="fileList">
                         <el-button size="small" type="primary">点击上传</el-button>
-                    </el-upload> -->
+                    </el-upload>
                 </el-form-item>
 
                 <el-form-item label="用户名" prop="userName">
@@ -127,9 +139,9 @@
                     <el-input type="phone"   v-model="addFaceIdFrom.phone" autocomplete="off"></el-input>
                 </el-form-item>
 
-                <el-form-item label="设备编号" prop="eNumStr">
+                <!-- <el-form-item label="设备编号" prop="eNumStr">
                     <el-input type="eNumStr"   v-model="addFaceIdFrom.eNumStr" autocomplete="off"></el-input>
-                </el-form-item>
+                </el-form-item> -->
 
                 <el-form-item label="性别" prop="sex">
                     <el-select v-model="addFaceIdFrom.sex" placeholder="选择性别">
@@ -159,16 +171,19 @@ export default {
             total: 1,
             showList: [],
             isAddFace: false,
+            addpolicecomName: [], //小区列表
+            addpvalue: '', //选中的小区
             addFaceIdFrom: { // 新增face
-                faceImg: '',
+                img: '',
                 userName: '',
                 faceType: '', //人脸类型，1-白名单，2-黑名单
                 phone: '',
-                eNumStr: "",
+                // eNumStr: "",
                 sex: '', // 男1，女2
+                proName:'',
             },
             addFaceIdRules: { // 新增填写规则
-                faceImg: [{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
+                img: [{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
                 userName: [{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
                 faceType: [{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
                 phone:[{ required: true, message: '此项不能为空，请填写', trigger: 'blur' }],
@@ -182,9 +197,34 @@ export default {
     },
     mounted(){
         this.getData(this.current, this.size)
-        this.getStr()
+        
+        // this.getStr()
+        this.getComName()
     },
     methods: {
+    //     handleRemove(file, fileList) {
+    //   // console.log(file, fileList);
+    // },
+    // handlePreview(file) {
+      
+    // },
+    // handleExceed(files, fileList) {
+    //   this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    // },
+    // beforeRemove(file, fileList) {
+    //   return this.$confirm(`确定移除 ${ file.name }？`);
+    // },
+    // handSuccess(file, fileList){
+    //   // console.log('fileList', file, this.fileList)
+    //   console.log('resssss',file);
+    //   console.log('code',file.code);
+    //   if(file.code === 1002){
+    //     this.addFaceIdFrom.img = file.data[0]
+    //     console.log('成功',this.addFaceIdFrom)
+    //   }
+    // },
+       
+
         async getData(current, size){
             const {data: res} = await this.$http.post('http://www.hbzayun.com/ACSystem/findAuditFace', null, {params: {
                 key:'e098214294ad13f23e16ae5ebecf970d',
@@ -205,7 +245,7 @@ export default {
             }
         },
         // 获取设备编号
-        getStr(){
+        getStr(){ 
             this.$http.post('http://www.hbzayun.com/ACSystem/findEquip', null, {params: {
                 key:'e098214294ad13f23e16ae5ebecf970d',
                 token:'1bbd886460827015e5d605ed44252251'
@@ -284,42 +324,129 @@ export default {
             this.isAddFace = false
             this.$refs[formName].resetFields();
         },
+        // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.get('/house/changeCom')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.communityName,
+                    label: item.communityName
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName = dataArr
+            console.log('小区列表', this.addpolicecomName )
+        },
+        //根据小区名查询设备编号
+    async getcomEnum(callBack){
+        let arr 
+        const {data:res} = await this.$http.post('/faceImg/lookEnum', null, {params: {comName: this.addpvalue}})
+        console.log('获取小区设备编号', res)
+        if(res.code == 1002){
+            callBack(res.data)
+        }
+        },
         // 添加人脸
-        async addFaceOk(formName){ // 设备号 676788917790010200002
-
-        let _this = this
-            const staticobj = {
-                key:'e098214294ad13f23e16ae5ebecf970d',
-                token:'1bbd886460827015e5d605ed44252251'
-              }
-            // let data = this.$qs.stringify(this.addFaceIdFrom)
-            let formData = new FormData()
-
-            formData.append('faceImg', this.addFaceIdFrom.faceImg)
-            formData.append('userName', this.addFaceIdFrom.userName)
-            formData.append('faceType', this.addFaceIdFrom.faceType)
-            formData.append('phone', this.addFaceIdFrom.phone)
-            formData.append('eNumStr', this.addFaceIdFrom.eNumStr)
-            formData.append('sex', this.addFaceIdFrom.sex)
-            
-
-            console.log('处理后',formData)
-            // return
-
-           const { data:res } = await this.$http.post('http://www.hbzayun.com/ACSystem/openApi/addFace', formData, {params: staticobj})
-
-            console.log('添加人脸返回数据',res)
-            if(res.code == 200){
-                _this.$message.success(res.extend.data)
-                _this.getData()
-                _this.isAddFace = false
-            }else{
-                _this.$message.error(res.extend.data)
-                 _this.isAddFace = false
+        async addFaceOk(formName){ 
+            let _this = this
+            if(!this.addpvalue) {
+                this.$message.error('请选择小区')
+                return
             }
+            this.addFaceIdFrom.proName = this.addpvalue
+            this.$refs[formName].validate(async valid => {
+                if (valid) {
+                    console.log('xxxxx',this.addFaceIdFrom)
+                    // return
+                    // let formData = new FormData()
+                    // // this.addFaceIdFrom.eNumStr = item
+                    
+                    // for(let key in this.addFaceIdFrom){
+                    //     formData.append(key, this.addFaceIdFrom[key]) 
+                    // }
+                    const {data:res} = await this.$http.post('/faceImg/appAddFace', null, {params:this.addFaceIdFrom})
+                    console.log('添加请求返回数据', res)
+                    if(res.code === 1000){
+                        this.getData(this.current, this.size)
+                        this.isAddFace = false
+                        this.$message({
+                            message:'操作成功',
+                            type: 'success'
+                        })
+                    }else{
+                        this.isAddFace = false
+                        this.$message({
+                            message: '操作失败',
+                            type: 'danger'
+                        })
+                    }
 
-            
-           
+
+                    // 获取设备编号
+                    // this.getcomEnum(eNumStrArr =>{
+                        
+                    //     console.log('获取到的设备编号列表', eNumStrArr)
+                    //     let isOk = true
+
+                    //     // 根据设备的个数进行循环请求
+                    //     eNumStrArr.forEach(async item =>{
+                    //         let formData = new FormData()
+                    //         this.addFaceIdFrom.eNumStr = item
+                            
+                    //         for(let key in this.addFaceIdFrom){
+                    //             formData.append(key, this.addFaceIdFrom[key]) 
+                    //         }
+                    //         console.log('所需要的数据', this.addFaceIdFrom)
+                    //         // 请求
+                    //         const { data:res } = await this.$http.post('http://www.hbzayun.com/ACSystem/openApi/addFace', formData, {params: staticobj})
+                    //         console.log('请求后返回的数据', res)
+
+                    //         if(res.code == 200){
+                    //             if(isOk){
+                    //                 isOk = false
+                    //                 this.$message.success('添加成功')
+                    //             }
+                    //         }else{
+                    //             this.$message.error('人脸添加失败, 失败设备编号：' + item)
+                    //         }
+
+                            
+                    //     })
+                    //      // 不好判断几个请求成功,直接刷新页面
+                    //     console.log('1')
+                    //     this.getData(this.current, this.size)
+                    //     console.log('2')
+                    //     this.isAddFace = false
+                           
+
+                    // })
+                    
+                    
+
+                    // console.log('添加人脸返回数据',res)
+                    // if(res.code == 200){
+                    //     _this.$message.success(res.extend.data)
+                    //     _this.getData()
+                    //     _this.isAddFace = false
+                    // }else{
+                    //     _this.$message.error(res.extend.data)
+                    //     _this.isAddFace = false
+                    // }
+
+                } else {
+                this.$message({
+                    message: "Error",
+                    type: "warning"
+                });
+                return false;
+                }
+            });
+
             
         },
         // 上传图片
@@ -328,7 +455,7 @@ export default {
             let fileList = document.querySelector('#imgLocal').files
             let file = fileList[0]
             console.log('file', file)
-            this.addFaceIdFrom.faceImg = file
+            this.addFaceIdFrom.img = file
 
             
             // const fileReader = new FileReader()
@@ -356,11 +483,11 @@ export default {
     handSuccess(file, fileList){
       // console.log('fileList', file, this.fileList)
       console.log('res',file, fileList);
-      this.addFaceIdFrom.faceImg = fileList.raw
-    //   if(file.code == 1002){
-    //     this.addFaceIdFrom.faceImg = file.data[0]
-    //     console.log(this.addFaceIdFrom)
-    //   }
+    //   this.addFaceIdFrom.faceImg = fileList.raw
+      if(file.code == 1002){
+        this.addFaceIdFrom.img = file.data[0]
+        console.log(this.addFaceIdFrom)
+      }
     }
     }
 }

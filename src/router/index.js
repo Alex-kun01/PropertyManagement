@@ -5,6 +5,7 @@ import LoginPage from '@/pages/LoginPage'
 
 // 二级路由
 import OvnerPage from '@/components/user/OvnerPage'
+import FirstShow from '@/components/user/FirstShow'
 import PolicePage from '@/components/user/PolicePage'
 import EditionPage from '@/components/system/EditionPage'
 import StorBuilder from '@/components/hose/StorBuilder'
@@ -35,7 +36,11 @@ import YunIntercomsee from '@/components/access/YunIntercomsee'
 import OtherCamera from '@/components/hardware/OtherCamera'
 import SnapshotCamera from '@/components/hardware/SnapshotCamera'
 import MotorvhicleTool from '@/components/finance/MotorvhicleTool'
-
+import CompanySet from '@/components/hardware/CompanySet'
+import MenuSet from '@/components/hardware/MenuSet'
+import SystemUser from '@/components/hardware/SystemUser'
+import RolesSet from '@/components/hardware/RolesSet'
+import ShowPage from '@/pages/Showpage'
 
 Vue.use(Router)
 
@@ -43,51 +48,95 @@ export default new Router({
     routes: [{
             path: '/',
             name: 'login',
-            component: LoginPage
+            component: LoginPage,
+            meta: {
+                role: '登录'
+            }
+        },
+        {
+            path: '/showpage',
+            name: 'showpage',
+            component: ShowPage,
+            meta: {
+                role: '首页'
+            }
         },
         {
             path: '/index',
             name: 'index',
             component: IndexPage,
             children: [{
-                    path: 'ovnerpage',
-                    name: 'ovnerpage',
-                    component: OvnerPage
+                    path: 'firstshow',
+                    name: 'irstshow',
+                    component: FirstShow,
+                    meta: {
+                        role: '首页'
+                    }
                 },
+
                 {
                     path: 'policePage',
                     name: 'policePage',
-                    component: PolicePage
+                    component: PolicePage,
+                    meta: {
+                        role: '用户管理'
+                    }
+                },
+                {
+                    path: 'ovnerpage',
+                    name: 'ovnerpage',
+                    component: OvnerPage,
+                    meta: {
+                        role: '用户管理'
+                    }
                 },
                 {
                     path: 'editionpage',
                     name: 'editionpage',
-                    component: EditionPage
+                    component: EditionPage,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'storbuilder',
                     name: 'storbuilder',
-                    component: StorBuilder
+                    component: StorBuilder,
+                    meta: {
+                        role: '房屋管理'
+                    }
                 },
                 {
                     path: 'adlist',
                     name: 'adlist',
-                    component: AdList
+                    component: AdList,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'ovnerrotion',
                     name: 'ovnerrotion',
-                    component: OvnerRotion
+                    component: OvnerRotion,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'policerotion',
                     name: 'policerotion',
-                    component: PoliceRotion
+                    component: PoliceRotion,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'toupdate',
                     name: 'toupdate',
-                    component: ToUpdate
+                    component: ToUpdate,
+                    meta: {
+                        role: '管理'
+                    }
                 },
                 // {
                 //     path: 'userapplication',
@@ -97,27 +146,42 @@ export default new Router({
                 {
                     path: 'repairlist',
                     name: 'repairlist',
-                    component: RepairList
+                    component: RepairList,
+                    meta: {
+                        role: '房屋管理'
+                    }
                 },
                 {
                     path: 'adset',
                     name: 'adset',
-                    component: AdSet
+                    component: AdSet,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'faceset',
                     name: 'faceset',
-                    component: FaceSet
+                    component: FaceSet,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'openingrecord',
                     name: 'openingrecord',
-                    component: OpeningRecord
+                    component: OpeningRecord,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'punchclock',
                     name: 'punchclock',
-                    component: PunchClock
+                    component: PunchClock,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 // {
                 //     path: 'garbagecharge',
@@ -127,84 +191,165 @@ export default new Router({
                 {
                     path: 'parkingrate',
                     name: 'parkingrate',
-                    component: ParkingRate
+                    component: ParkingRate,
+                    meta: {
+                        role: '财务管理'
+                    }
                 },
                 {
                     path: 'propertyfee',
                     name: 'propertyfee',
-                    component: PropertyFee
+                    component: PropertyFee,
+                    meta: {
+                        role: '财务管理'
+                    }
                 },
                 {
                     path: 'propertyset',
                     name: 'propertyset',
-                    component: PropertySet
+                    component: PropertySet,
+                    meta: {
+                        role: '财务管理'
+                    }
                 },
                 {
                     path: 'servicephone',
                     name: 'servicephone',
-                    component: ServicePhone
+                    component: ServicePhone,
+                    meta: {
+                        role: '系统消息'
+                    }
                 },
                 {
                     path: 'housingshen',
                     name: 'housingshen',
-                    component: HousingShen
+                    component: HousingShen,
+                    meta: {
+                        role: '房屋管理'
+                    }
                 },
                 {
                     path: 'announecment',
                     name: 'announecment',
-                    component: AnnounCement
+                    component: AnnounCement,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'communityactivity',
                     name: 'communityactivity',
-                    component: CommunityActivity
+                    component: CommunityActivity,
+                    meta: {
+                        role: 'APP管理'
+                    }
                 },
                 {
                     path: 'yunintercom',
                     name: 'yunintercom',
-                    component: YunIntercom
+                    component: YunIntercom,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'appface',
                     name: 'appface',
-                    component: AppFace
+                    component: AppFace,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'facecamera',
                     name: 'facecamera',
-                    component: FaceCamera
+                    component: FaceCamera,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'maneuvercar',
                     name: 'maneuvercar',
-                    component: ManeuverCar
+                    component: ManeuverCar,
+                    meta: {
+                        role: '车辆管理'
+                    }
                 }, {
                     path: 'notmaneuvercar',
                     name: 'notmaneuvercar',
-                    component: NotmaneuverCar
+                    component: NotmaneuverCar,
+                    meta: {
+                        role: '车辆管理'
+                    }
                 },
                 {
                     path: 'yunintercomsee',
                     name: 'yunintercomsee',
-                    component: YunIntercomsee
+                    component: YunIntercomsee,
+                    meta: {
+                        role: '门禁管理'
+                    }
                 },
                 {
                     path: 'snapshotcamera',
                     name: 'snapshotcamera',
-                    component: SnapshotCamera
+                    component: SnapshotCamera,
+                    meta: {
+                        role: '硬件管理'
+                    }
                 },
                 {
                     path: 'othercamera',
                     name: 'othercamera',
-                    component: OtherCamera
+                    component: OtherCamera,
+                    meta: {
+                        role: '硬件管理'
+                    }
                 },
                 {
                     path: 'motorvhicletool',
                     name: 'motorvhicletool',
-                    component: MotorvhicleTool
+                    component: MotorvhicleTool,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'companyset',
+                    name: 'companyset',
+                    component: CompanySet,
+                    meta: {
+                        role: '权限管理'
+                    }
+                },
+                {
+                    path: 'systemuser',
+                    name: 'systemuser',
+                    component: SystemUser,
+                    meta: {
+                        role: '权限管理'
+                    }
+                },
+                {
+                    path: 'menuset',
+                    name: 'menuset',
+                    component: MenuSet,
+                    meta: {
+                        role: '权限管理'
+                    }
+                },
+                {
+                    path: 'rolesset',
+                    name: 'rolesset',
+                    component: RolesSet,
+                    meta: {
+                        role: '权限管理'
+                    }
                 },
             ]
         },
 
     ]
+
 })

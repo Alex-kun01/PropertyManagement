@@ -92,6 +92,13 @@
                         </el-select>
                     </el-form-item>
 
+                    <el-form-item
+                    label="手机号"
+                    prop="phone"
+                    >
+                        <el-input type="phone" v-model="addpoliceForm.phone" autocomplete="off"></el-input>
+                    </el-form-item>
+
                 </el-form>
 
             <span slot="footer" class="dialog-footer">
@@ -102,7 +109,7 @@
 
         <!-- 修改 -->
         <el-dialog
-        title="修改密码"
+        title="修改"
         :visible.sync="isEditPolice"
         width="30%"
         :before-close="editHandleClose">
@@ -120,6 +127,13 @@
                     prop="newPassword"
                     >
                         <el-input type="newPassword" v-model="editPoliceFrom.newPassword" autocomplete="off"></el-input>
+                    </el-form-item>
+
+                    <el-form-item
+                    label="手机号"
+                    prop="phone"
+                    >
+                        <el-input type="phone" v-model="editPoliceFrom.phone" autocomplete="off"></el-input>
                     </el-form-item>
 
                 </el-form>
@@ -147,7 +161,8 @@ export default {
             addpoliceForm: { // 新增保安数据
                 pAccount: '',
                 pPassword: '',
-                comName: ''
+                comName: '',
+                phone: ''
             },
             // 新增保安填写规则
             addpoliceRules: {
@@ -157,7 +172,10 @@ export default {
                 ],
                 pPassword: [
                    { required: true, message: '请您填写密码', trigger: 'blur' },
-                ]
+                ],
+                phone:  [
+                   { required: true, message: '请您填写手机号', trigger: 'blur' },
+                ],
             },
             addpvalue: '',
             addpolicecomName: [], // 小区列表
@@ -166,14 +184,14 @@ export default {
             // 修改保安信息数据
             editPoliceFrom: {
                 policeId: '',
-                newPassword: ''
+                newPassword: '',
+                phone: ''
             },
             // 修改保安填写规则
             edtiPoliceRules: {
-                newPassword: [
-                    { required: true, message: '请您填写密码', trigger: 'blur' },
-                    // { min: 2, max: 6, message: '密码长度在2-6之间', trigger: 'blur' }
-                ]
+                // newPassword: [
+                //     { required: true, message: '请您填写密码', trigger: 'blur' },
+                // ]
             }
 
         }
