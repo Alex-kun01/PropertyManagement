@@ -1,11 +1,11 @@
 <template>
   <div class="yunIntercom_box">
     <div class="yunIntercom">
-      <!-- 菜单管理 -->
+      <!-- 停车场管理 -->
       <el-breadcrumb style="margin-bottom: 10px;" separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-        <el-breadcrumb-item>公司管理</el-breadcrumb-item>
+        <el-breadcrumb-item>车辆管理</el-breadcrumb-item>
+        <el-breadcrumb-item>停车场管理</el-breadcrumb-item>
       </el-breadcrumb>
 
       <el-button @click="isAddYun = true" style="margin-bottom:10px;" type="primary">新增</el-button>
@@ -14,9 +14,21 @@
       <template>
         <el-table :data="targetData" border style="width: 100%">
           <el-table-column type="index" label="#" align="center"></el-table-column>
+          <el-table-column prop="communityName" label="小区名" align="center"></el-table-column>
           <!-- <el-table-column prop="id" label="id" align="center"></el-table-column> -->
-          <el-table-column prop="menuName" label="菜单名" align="center"></el-table-column>
+          <el-table-column prop="appId" label="appId" align="center"></el-table-column>
+          
+          <el-table-column prop="secretKey" label="secretKey" align="center"></el-table-column>
+          <el-table-column prop="parkId" label="停车场ID" align="center"></el-table-column>
           <el-table-column prop="publishTime" label="添加时间" align="center"></el-table-column>
+
+        
+          <!-- <el-table-column prop="state" label="状态" align="center">
+              <template slot-scope="scope">
+                  <span v-if="scope.row.canUse == 1">可用</span>
+                  <span v-else>不可用</span>
+              </template>
+          </el-table-column> -->
 
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
@@ -49,8 +61,29 @@
         label-width="100px"
         class="addpolice_from"
       >
-         <el-form-item label="菜单名" prop="menuName">
-           <el-input type="menuName" v-model="targetDataForm.menuName" autocomplete="off"></el-input>
+
+         <el-form-item label="小区名" prop="communityName">
+           <!-- <el-input type="communityName" v-model="targetDataForm.communityName" autocomplete="off"></el-input> -->
+              <el-select v-model="addpvalue2" placeholder="请选择">
+                <el-option
+                v-for="item in addpolicecomName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
+         </el-form-item>
+
+         <el-form-item label="appId" prop="appId">
+           <el-input type="appId" v-model="targetDataForm.appId" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="secretKey" prop="secretKey">
+           <el-input type="secretKey" v-model="targetDataForm.secretKey" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="停车场ID" prop="parkId">
+           <el-input type="parkId" v-model="targetDataForm.parkId" autocomplete="off"></el-input>
          </el-form-item>
 
         </el-form>
@@ -71,13 +104,26 @@
           label-width="100px"
           class="addpolice_from"
         >
-        <el-form-item label="id" prop="id">
-           <el-input disabled type="menuName" v-model="editYunFrom.id" autocomplete="off"></el-input>
+         <el-form-item label="id" prop="id">
+           <el-input disabled type="id" v-model="editYunFrom.id" autocomplete="off"></el-input>
+         </el-form-item>
+        
+          <el-form-item label="小区名" prop="communityName">
+           <el-input type="communityName" v-model="editYunFrom.communityName" autocomplete="off"></el-input>
          </el-form-item>
 
-         <el-form-item label="菜单名" prop="menuName">
-           <el-input type="menuName" v-model="editYunFrom.menuName" autocomplete="off"></el-input>
+         <el-form-item label="appId" prop="appId">
+           <el-input type="appId" v-model="editYunFrom.appId" autocomplete="off"></el-input>
          </el-form-item>
+
+         <el-form-item label="secretKey" prop="secretKey">
+           <el-input type="secretKey" v-model="editYunFrom.secretKey" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="停车场ID" prop="parkId">
+           <el-input type="parkId" v-model="editYunFrom.parkId" autocomplete="off"></el-input>
+         </el-form-item>
+
 
         </el-form>
 
@@ -100,57 +146,90 @@ export default {
       current: 1, // 当前页码
       total: 0, // 总共条数
       targetData: [], // 渲染数据
+      addpvalue2: '',
+      addpolicecomName: [], //小区列表
       isAddYun: false, // 是否展示新增对话框
       targetDataForm: {
-        menuName: "",
+        communityName:'', //社区名
+        appId:'',
+        secretKey: '',
+        parkId: '',
       },
       targetDataRules: {
-        menuName: [
-          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
-        ],
-        eIp: [
-          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
-        ],
         communityName: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        location: [
+        appId: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        secretKey: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        parkId: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ]
       },
       isEditYun: false, // 编辑
       editYunFrom: {
         id: '',
-        menuName: ''
+        communityName:'', //社区名
+        appId:'',
+        secretKey: '',
+        parkId: '',
       },
       editYunRules: {
-        //新增数据规则
-        menuName: [
+        communityName: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        state: [
+        appId: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
+        secretKey: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        parkId: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ]
       },
+    // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.get('/house/changeCom')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.communityName,
+                    label: item.communityName
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName = dataArr
+            console.log('小区列表', this.addpolicecomName )
+        },
     };
   },
   mounted() {
+    this.getComName()
     this.getData();
   },
   methods: {
     async getData() { 
       const { data: res } = await this.$http.post(
-        "/sysMenu/getMenus", null, {params: {
+        "/carPark/getCarParks", null, {params: {
             current: this.current,
             size: this.size
         }}
       );
-      console.log("appface数据", res);
-      //   return
+      console.log("停车场管理返回数据", res);
+        // return
       if (res.code == 1003) {
         this.targetData = res.data.records;
         this.total = res.data.total;
         this.current = res.data.current;
+        this.size = res.data.size
       } else {
         this.$message({
           message: "服务器请求出错",
@@ -187,51 +266,86 @@ export default {
     // 新增提交
    async addYunOk(formName) {
        let _this = this
+       this.targetDataForm.communityName = this.addpvalue2
        console.log(this.targetDataForm) 
-       const {data: res} = await this.$http.post('/sysMenu/addorupdate',null, {params:this.targetDataForm})
+       const {data: res} = await this.$http.post('/carPark/addorupdate',null, {params:this.targetDataForm})
        console.log('新增返回数据', res)
        if(res.code === 1001){
            this.$message.success('添加成功')
            this.getData()
            this.isAddYun = false
+           this.$refs[formName].resetFields();
        }else{
            this.$message.error('添加失败')
             this.isAddYun = false
+            this.$refs[formName].resetFields();
        }
     },
     // 编辑提交
     async editYunOk(formName){
         console.log('编辑',  this.editYunFrom)
         // return
-       const {data: res} = await this.$http.post('/sysMenu/addorupdate',null, {params: this.editYunFrom})
+       const {data: res} = await this.$http.post('/carPark/addorupdate',null, {params: this.editYunFrom})
        console.log('修改返回数据', res)
        if(res.code === 1001){
            this.$message.success('修改成功')
            this.getData()
            this.isEditYun = false
+           this.$refs[formName].resetFields();
        }else{
            this.$message.error('修改失败')
             this.isEditYun = false
+            this.$refs[formName].resetFields();
        }
     },
+    // 编辑按钮
     editClick(scope){
         console.log('scope', scope)
         this.editYunFrom = scope
         console.log(this.editYunFrom, 'xxx')
         this.isEditYun = true
     },
-    // 删除按钮
-   async deleteClick(scope){
-      console.log('删除',scope)
-     const {data:res} = await this.$http.post('/sysMenu/delete', null, {params: {menuId: scope.id}})
-     console.log('删除后',res)
-     if(res.code === 1001){
-       this.$message.success('删除成功')
-       this.getData()
-     }else{
-       this.$message.error('删除失败')
-     }
-    }
+    //删除按钮
+     deleteClick(scope){
+        console.log('scope', scope)
+        this.$confirm("此操作将永久删除该房屋信息，是否继续？")
+        .then(async () => {
+           const {data: res} = await this.$http.post('/carPark/delete',null, {params:{
+               carId: scope.id
+           }}) 
+           console.log('删除返回',res)
+           if(res.code == 1001){
+               this.$message.success('删除成功')
+               this.getData()
+           }else{
+               this.$message.error('删除失败')
+           }
+        })
+        .catch(() => {
+          this.$message({
+            message: "已取消",
+            type: "info"
+          });
+        });
+    },
+     // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.get('/house/changeCom')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.communityName,
+                    label: item.communityName
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName = dataArr
+            console.log('小区列表', this.addpolicecomName )
+        },
   },
 };
 </script>

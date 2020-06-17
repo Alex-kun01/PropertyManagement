@@ -189,9 +189,10 @@ export default {
             },
             // 修改保安填写规则
             edtiPoliceRules: {
-                // newPassword: [
-                //     { required: true, message: '请您填写密码', trigger: 'blur' },
-                // ]
+                newPassword: [
+                    { required: true, message: '请您填写密码', trigger: 'blur' },
+                    // { min: 2, max: 6, message: '密码长度在2-6之间', trigger: 'blur' }
+                ]
             }
 
         }

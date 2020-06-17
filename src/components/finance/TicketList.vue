@@ -1,41 +1,38 @@
 <template>
   <div class="yunIntercom_box">
     <div class="yunIntercom">
-      <!-- 公司管理 -->
+      <!-- 票据管理 -->
       <el-breadcrumb style="margin-bottom: 10px;" separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-        <el-breadcrumb-item>公司管理</el-breadcrumb-item>
+        <el-breadcrumb-item>财务管理</el-breadcrumb-item>
+        <el-breadcrumb-item>票据管理</el-breadcrumb-item>
       </el-breadcrumb>
 
       <el-button @click="isAddYun = true" style="margin-bottom:10px;" type="primary">新增</el-button>
 
-      <!-- 云对讲列表 -->
+      <!-- 展示列表 -->
       <template>
+          <!-- id: 13
+desc: "周瑶"
+state: 0
+updateTime: "2020-06-16 15:59:01"
+createTime: -->
         <el-table :data="targetData" border style="width: 100%">
           <el-table-column type="index" label="#" align="center"></el-table-column>
-          <!-- <el-table-column prop="id" label="id" align="center"></el-table-column> -->
-          <el-table-column prop="compName" label="公司名" align="center"></el-table-column>
-          <el-table-column prop="legName" label="法人" align="center"></el-table-column>
-          <el-table-column prop="legIdCard" label="法人" align="center"></el-table-column>
-          <el-table-column prop="licenseImg" label="许可证" align="center"></el-table-column>
-          <el-table-column prop="legIdCard" label="法人身份证" align="center"></el-table-column>
-          <el-table-column prop="bankNum" label="银行账号" align="center"></el-table-column>
-          <el-table-column prop="yue" label="余额" align="center"></el-table-column>
-          <el-table-column prop="alipayAccount" label="支付宝账号" align="center"></el-table-column>
-          <el-table-column prop="realNameToAlipayAccount" label="支付宝真实姓名" align="center"></el-table-column>
-          <el-table-column prop="totalFlowAccount" label="总流量帐户" align="center"></el-table-column>
-          <el-table-column prop="phone" label="手机号" align="center"></el-table-column>
+          <el-table-column prop="desc" label="描述" align="center"></el-table-column>
+          <el-table-column prop="updateTime" label="更新时间" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
           <el-table-column prop="state" label="状态" align="center">
               <template slot-scope="scope">
-                  <span v-if="scope.row.state == 1">可用</span>
-                  <span v-if="scope.row.state == 2">不可用</span>
+                  <span v-if="scope.row.state == 0">未知状态1</span>
+                  <span v-if="scope.row.state == 1">未知状态2</span>
               </template>
           </el-table-column>
 
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
-              <el-button  @click="editClick(scope.row)" type="primary" size="mini">编辑</el-button>
+              <!-- <el-button  @click="editClick(scope.row)" type="primary" size="mini">编辑</el-button> -->
+              <el-button  @click="chakan(scope.row)" type="primary" size="mini">查看票据</el-button>
               <el-button  @click="deleteClick(scope.row)" type="danger" size="mini">删除</el-button>
             </template>
           </el-table-column>
@@ -291,14 +288,14 @@ export default {
   },
   methods: {
     async getData() { 
-      const { data: res } = await this.$http.post(
-        "/comyApply/getComyApplys", null, {params: {
+      const { data: res } = await this.$http.get(
+        "/bill/getBillPage",  {params: {
             current: this.current,
             size: this.size
         }}
       );
-      console.log("appface数据", res);
-      //   return
+      console.log("票据列表数据", res);
+        // return
       if (res.code == 1003) {
         this.targetData = res.data.records;
         this.total = res.data.total;
@@ -309,6 +306,17 @@ export default {
           type: "danger"
         });
       }
+    },
+    // 跳转票据
+    chakan(scope){
+        console.log('查看票据', scope)
+        // return
+        this.$router.push({
+            name: 'billpage',
+            query: {
+                id: scope.id
+            }
+        })
     },
     // 每页显示条数变化
     handleSizeChange(newSize) {
@@ -324,7 +332,7 @@ export default {
       this.isAddYun = false;
     },
     editYunClose(){
-        this.isEditYun = false;
+        this.isEditYun = false; 
     },
     addYunNo(formName) {
       this.isAddYun = false;

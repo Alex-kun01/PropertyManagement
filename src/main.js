@@ -6,9 +6,9 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
-axios.defaults.baseURL = 'http://47.108.80.252:8090'
-    // axios.defaults.baseURL = 'http://192.168.31.111:8090'  服务器地址 http://47.108.80.252:8090
-    // axios.defaults.baseURL = 'http://www.hbzayun.com'
+Vue.prototype.axios = axios
+axios.defaults.baseURL = 'http://wy.scfsll.com:8090' //'http://47.108.80.252:8090' // '192.168.31.142:8090'
+    // 'http://47.108.80.252:8090' //
 import store from './store/index'
 import qs from 'qs'
 
@@ -83,13 +83,18 @@ router.beforeEach((to, from, next) => {
         next()
 
     }
+    //APP管理
+    else if (to.meta.role == 'APP管理' && authority.includes('APP管理') || role === 1) {
+        console.log('通过APP管理')
+        next()
+    }
 
     //权限管理
     else if (to.meta.role == '权限管理' && authority.includes('权限管理') || role === 1) {
         console.log('通过财务管理')
         next()
 
-    } else if (to.meta.role == '登录' || to.meta.role == '首页') {
+    } else if (to.meta.role == '登录' || to.meta.role == '首页' || to.meta.role == '票据') {
         console.log('通过财务管理')
         next()
 

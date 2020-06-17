@@ -9,6 +9,10 @@
             </el-breadcrumb>
 
             <!-- 云对讲列表 -->
+              <el-button  @click="addClick"
+              style="margin:10px 0 10px 0"
+              type="primary" size="mini">
+                  新增</el-button>
       <template>
         <el-table :data="targetData" border style="width: 100%">
           <el-table-column type="index" label="#" align="center"></el-table-column>
@@ -25,13 +29,62 @@
               <el-button  @click="editClick(scope.row)" type="primary" size="mini">
                   <i class="el-icon-edit"></i>
                   编辑</el-button>
+                  <el-button  @click="deleteClick(scope.row)" type="danger" size="mini">
+                  <i class="el-icon-delete"></i>
+                  删除</el-button>
             </template>
           </el-table-column>
         </el-table>
       </template>
 
+      <!-- 新增对话框 -->
+
+      <el-dialog title="新增" :visible.sync="isAddYun1" width="50%" :before-close="addYunClose1">
+        <el-form
+        :model="targetDataForm1"
+        :rules="targetDataRules1"
+        ref="targetDataRef1"
+        label-width="100px"
+        class="addpolice_from"
+      >
+         <!-- <el-form-item label="id" prop="id">
+           <el-input type="eName" disabled v-model="targetDataForm1.id" autocomplete="off"></el-input>
+         </el-form-item> -->
+
+         <el-form-item label="设备id" prop="deviceId">
+           <el-input type="deviceId" v-model="targetDataForm1.deviceId" autocomplete="off"></el-input>
+         </el-form-item>
+         
+         <el-form-item label="p2pId" prop="p2pId">
+           <el-input type="p2pId" v-model="targetDataForm1.p2pId" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="token" prop="token">
+           <el-input type="token" v-model="targetDataForm1.token" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="设备Mac" prop="deviceMac">
+           <el-input type="deviceMac" v-model="targetDataForm1.deviceMac" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="设备位置" prop="deciveLocation">
+           <el-input type="deciveLocation" v-model="targetDataForm1.deciveLocation" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="设备名称" prop="deviceName">
+           <el-input type="deviceName" v-model="targetDataForm1.deviceName" autocomplete="off"></el-input>
+         </el-form-item>
+
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addYunNo1('targetDataRef1')">取 消</el-button>
+          <el-button type="primary" @click="addYunOk1('targetDataRef1')">确 定</el-button>
+        </span>
+      </el-dialog>
+
       <!-- 编辑对话框 -->
-      <el-dialog title="添加人脸抓拍" :visible.sync="isAddYun" width="50%" :before-close="addYunClose">
+      <el-dialog title="编辑" :visible.sync="isAddYun" width="50%" :before-close="addYunClose">
         <el-form
         :model="targetDataForm"
         :rules="targetDataRules"
@@ -70,8 +123,17 @@ export default {
         return {
             targetData:[],
             isAddYun: false,
+            isAddYun1: false,
             targetDataForm: {
                 id: '',
+                deciveLocation: '',
+                deviceName: ''
+            },
+            targetDataForm1: {
+                deviceId:'',
+                p2pId:'',
+                token:'',
+                deviceMac:'',
                 deciveLocation: '',
                 deviceName: ''
             },
@@ -85,6 +147,26 @@ export default {
                 deviceName: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ]
+            },
+            targetDataRules1: {
+                deciveLocation: [
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
+                    deviceName: [
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
+                deviceId:[
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
+                p2pId:[
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
+                token:[
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
+                deviceMac:[
+              { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+            ],
             }
 
         }
@@ -100,6 +182,7 @@ export default {
                 this.targetData = res.data
             }
         },
+        // 编辑按钮
         editClick(scope){
             console.log(scope)
             this.targetDataForm.id = scope.id
@@ -107,12 +190,31 @@ export default {
             this.targetDataForm.deviceName = scope.deviceName
             this.isAddYun = true
         },
+        // 删除按钮
+       async deleteClick(scope){
+          console.log(scope)
+          let id = scope.id
+          const {data:res} = await this.$http.post('/camera/deleteCamera', null, {params: {id:id}})
+          console.log('删除',res)
+          if(res.code === 1001){
+            this.$message.success('删除成功')
+            this.getData()
+          }else{
+            this.$message.error('删除失败')
+          }
+
+        },
         addYunNo(formName){
         this.isAddYun = false
         this.$refs[formName].resetFields();
         // this.fileList2 = []
     },
-    // 新增提交
+    addYunNo1(formName){
+        this.isAddYun1 = false
+        this.$refs[formName].resetFields();
+        // this.fileList2 = []
+    },
+    // 编辑提交
    addYunOk(formName) {
        let _this = this
         this.$refs[formName].validate( async valid => {
@@ -139,9 +241,44 @@ export default {
         }
       });
     },
+    // 新增提交
+   addYunOk1(formName) {
+       let _this = this
+        this.$refs[formName].validate( async valid => {
+        if (valid) {
+          console.log('新增',this.targetDataForm1)
+          // return
+            const {data:res} = await this.$http.post('/camera/addCamera', null, {params: this.targetDataForm1})
+            console.log('修改后返回数据', res)
+            if(res.code == 1001){
+                this.$message.success('修改成功')
+                this.isAddYun1 = false
+                this.$refs[formName].resetFields()
+                this.getData()
+            }else{
+                this.$message.error('修改失败')
+                this.isAddYun1 = false
+                this.$refs[formName].resetFields()
+            }
+
+        } else {
+          this.$message({
+            message: "Error",
+            type: "warning"
+          });
+          return false;
+        }
+      });
+    },
     addYunClose() {
       this.isAddYun = false;
     },
+    addYunClose1() {
+      this.isAddYun1 = false;
+    },
+    addClick(){
+      this.isAddYun1 = true
+    }
     }
 }
 </script>

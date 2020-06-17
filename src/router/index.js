@@ -2,9 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import IndexPage from '@/pages/IndexPage'
 import LoginPage from '@/pages/LoginPage'
+import ShowPage from '@/pages/Showpage'
+import BillPage from '@/pages/BillPage'
 
 // 二级路由
 import OvnerPage from '@/components/user/OvnerPage'
+import PoliceRepair from '@/components/user/PoliceRepair'
 import FirstShow from '@/components/user/FirstShow'
 import PolicePage from '@/components/user/PolicePage'
 import EditionPage from '@/components/system/EditionPage'
@@ -20,6 +23,12 @@ import FaceSet from '@/components/access/FaceSet'
 import OpeningRecord from '@/components/access/OpeningRecord'
 import PunchClock from '@/components/app/PunchClock'
 import GarbageCharge from '@/components/finance/GarbageCharge'
+import TicketList from '@/components/finance/TicketList'
+import livingExpenses from '@/components/finance/livingExpenses'
+import CostCategory from '@/components/finance/CostCategory'
+import AdvancePayment from '@/components/finance/AdvancePayment'
+import UsageDetails from '@/components/finance/UsageDetails'
+import ArrearsDetails from '@/components/finance/ArrearsDetails'
 import ParkingRate from '@/components/finance/ParkingRate'
 import PropertyFee from '@/components/finance/PropertyFee'
 import PropertySet from '@/components/finance/PropertySet'
@@ -40,7 +49,10 @@ import CompanySet from '@/components/hardware/CompanySet'
 import MenuSet from '@/components/hardware/MenuSet'
 import SystemUser from '@/components/hardware/SystemUser'
 import RolesSet from '@/components/hardware/RolesSet'
-import ShowPage from '@/pages/Showpage'
+
+import ParkingSet from '@/components/carset/ParkingSet'
+
+
 
 Vue.use(Router)
 
@@ -59,6 +71,14 @@ export default new Router({
             component: ShowPage,
             meta: {
                 role: '首页'
+            }
+        },
+        {
+            path: '/billpage',
+            name: 'billpage',
+            component: BillPage,
+            meta: {
+                role: '票据'
             }
         },
         {
@@ -345,6 +365,70 @@ export default new Router({
                     component: RolesSet,
                     meta: {
                         role: '权限管理'
+                    }
+                },
+                {
+                    path: 'parkingset',
+                    name: 'parkingset',
+                    component: ParkingSet,
+                    meta: {
+                        role: '车辆管理'
+                    }
+                },
+                {
+                    path: 'policerepair',
+                    name: 'policerepair',
+                    component: PoliceRepair,
+                    meta: {
+                        role: '用户管理'
+                    }
+                },
+                {
+                    path: 'costcategory',
+                    name: 'costcategory',
+                    component: CostCategory,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'usagedetails',
+                    name: 'usagedetails',
+                    component: UsageDetails,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'arrearsdetails',
+                    name: 'arrearsdetails',
+                    component: ArrearsDetails,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'advancepayment',
+                    name: 'advancepayment',
+                    component: AdvancePayment,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'livingexpenses',
+                    name: 'livingexpenses',
+                    component: livingExpenses,
+                    meta: {
+                        role: '财务管理'
+                    }
+                },
+                {
+                    path: 'ticketlist',
+                    name: 'ticketlist',
+                    component: TicketList,
+                    meta: {
+                        role: '财务管理'
                     }
                 },
             ]

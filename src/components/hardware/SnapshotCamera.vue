@@ -1,7 +1,7 @@
 <template>
   <div class="yunIntercom_box">
     <div class="yunIntercom">
-      <!-- 硬件管理 -->
+      <!-- 抓拍摄像头 -->
       <el-breadcrumb style="margin-bottom: 10px;" separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
         <el-breadcrumb-item>硬件管理</el-breadcrumb-item>
@@ -18,23 +18,25 @@
           <el-table-column prop="eIp" label="设备IP" align="center"></el-table-column>
           <el-table-column prop="communityName" label="小区名称" align="center"></el-table-column>
           <el-table-column prop="location" label="位置" align="center"></el-table-column>
+          <el-table-column prop="deviceMac" label="设备地址" align="center"></el-table-column>
           <el-table-column prop="canUse" label="是否可用" align="center">
-              <template slot-scope="scope">
-                  <span v-if="scope.row.canUse == 1">可用</span>
-                  <span v-else>不可用</span>
-              </template>
+            <template slot-scope="scope">
+              <span v-if="scope.row.canUse == 1">可用</span>
+              <span v-else>不可用</span>
+            </template>
           </el-table-column>
 
-          <!-- <el-table-column label="操作" align="center">
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
-              <el-button  @click="editClick(scope.row)" type="primary" size="mini">编辑</el-button>
+              <el-button @click="editClick(scope.row)" type="primary" size="mini">编辑</el-button>
+              <el-button @click="deleteClick(scope.row)" type="danger" size="mini">删除</el-button>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
       </template>
 
       <!-- 分页 数据较少暂不分页 -->
-      <!-- <div class="paging">
+      <div class="paging">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -44,33 +46,45 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
-      </div> -->
+      </div>
 
       <!-- 新增对话框 -->
-      <el-dialog title="添加人脸抓拍" :visible.sync="isAddYun" width="50%" :before-close="addYunClose">
+      <el-dialog title="新增" :visible.sync="isAddYun" width="50%" :before-close="addYunClose">
         <el-form
-        :model="targetDataForm"
-        :rules="targetDataRules"
-        ref="targetDataRef"
-        label-width="100px"
-        class="addpolice_from"
-      >
-         <el-form-item label="设备名称" prop="eName">
-           <el-input type="eName" v-model="targetDataForm.eName" autocomplete="off"></el-input>
-         </el-form-item>
+          :model="targetDataForm"
+          :rules="targetDataRules"
+          ref="targetDataRef"
+          label-width="100px"
+          class="addpolice_from"
+        >
+          <el-form-item label="设备名称" prop="eName">
+            <el-input type="eName" v-model="targetDataForm.eName" autocomplete="off"></el-input>
+          </el-form-item>
 
-         <el-form-item label="设备IP" prop="eIp">
-           <el-input type="eIp" v-model="targetDataForm.eIp" autocomplete="off"></el-input>
-         </el-form-item>
+          <el-form-item label="设备IP" prop="eIp">
+            <el-input type="eIp" v-model="targetDataForm.eIp" autocomplete="off"></el-input>
+          </el-form-item>
 
-         <el-form-item label="小区名称" prop="communityName">
-           <el-input type="communityName" v-model="targetDataForm.communityName" autocomplete="off"></el-input>
-         </el-form-item>
+          <el-form-item label="设备地址" prop="deviceMac">
+            <el-input type="" v-model="targetDataForm.deviceMac" autocomplete="off"></el-input>
+          </el-form-item>
 
-         <el-form-item label="位置" prop="location">
-           <el-input :disabled="false" type="location" v-model="targetDataForm.location" autocomplete="off"></el-input>
-         </el-form-item>
+          <el-form-item label="小区名称" prop="communityName">
+            <el-input
+              type="communityName"
+              v-model="targetDataForm.communityName"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
 
+          <el-form-item label="位置" prop="location">
+            <el-input
+              :disabled="false"
+              type="location"
+              v-model="targetDataForm.location"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
         </el-form>
 
         <span slot="footer" class="dialog-footer">
@@ -79,9 +93,8 @@
         </span>
       </el-dialog>
 
-
-       <!-- 编辑对话框 -->
-      <el-dialog title="添加人脸" :visible.sync="isEditYun" width="30%" :before-close="editYunClose">
+      <!-- 编辑对话框 -->
+      <el-dialog title="编辑" :visible.sync="isEditYun" width="30%" :before-close="editYunClose">
         <el-form
           :model="editYunFrom"
           :rules="editYunRules"
@@ -89,18 +102,34 @@
           label-width="100px"
           class="addpolice_from"
         >
-          <el-form-item label="用户ID" prop="id">
-            <el-input disabled type="id" v-model="editYunFrom.id" autocomplete="off"></el-input>
+          <el-form-item label="id" prop="id">
+            <el-input type="id" disabled v-model="editYunFrom.id" autocomplete="off"></el-input>
           </el-form-item>
 
-          <el-form-item label="审核" prop="state">
-            <el-select v-model="editYunFrom.state" placeholder="选择">
-              <el-option label="通过" value="1"></el-option>
-              <el-option label="拒绝" value="2"></el-option>
-            </el-select>
+          <el-form-item label="设备名称" prop="eName">
+            <el-input type="eName" v-model="editYunFrom.eName" autocomplete="off"></el-input>
           </el-form-item>
 
+        <el-form-item label="设备IP" prop="eIp">
+            <el-input type="eIp" v-model="editYunFrom.eIp" autocomplete="off"></el-input>
+          </el-form-item>
 
+          <el-form-item label="小区名称" prop="communityName">
+            <el-input type="communityName" v-model="editYunFrom.communityName" autocomplete="off"></el-input>
+          </el-form-item>
+
+          <el-form-item label="设备地址" prop="deviceMac">
+            <el-input type="" v-model="editYunFrom.deviceMac" autocomplete="off"></el-input>
+          </el-form-item>
+
+          <el-form-item label="位置" prop="location">
+            <el-input
+              :disabled="false"
+              type="location"
+              v-model="editYunFrom.location"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
         </el-form>
 
         <span slot="footer" class="dialog-footer">
@@ -108,8 +137,6 @@
           <el-button type="primary" @click="editYunOk('editYundRef')">确 定</el-button>
         </span>
       </el-dialog>
-
-
     </div>
   </div>
 </template>
@@ -127,7 +154,8 @@ export default {
         eName: "",
         eIp: "",
         communityName: "",
-        location: ""
+        location: "",
+        deviceMac:''
       },
       targetDataRules: {
         eName: [
@@ -141,33 +169,56 @@ export default {
         ],
         location: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
-        ]
+        ],
+        deviceMac: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
       },
       isEditYun: false, // 编辑
       editYunFrom: {
-        id: '',
-        state: ''
+        id: "",
+        eName: "",
+        eIp: "",
+        communityName: "",
+        location: "",
+        deviceMac: ''
       },
       editYunRules: {
         //新增数据规则
         id: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        state: [
+        eName: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-      },
+        eIp: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        communityName: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        location: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ]
+      }
     };
   },
   mounted() {
     this.getData();
   },
   methods: {
-    async getData() { 
+    async getData() {
       const { data: res } = await this.$http.post(
-        "/faceCamera/lookFaceCamera"
+        "/faceCamera/lookFaceCamera",
+        null,
+        {
+          params: {
+            current: this.current,
+            size: this.size
+          }
+        }
       );
-      console.log("appface数据", res);
+      console.log("抓拍摄像头返回数据 ", res);
       if (res.code == 1002) {
         this.targetData = res.data.records;
         this.total = res.data.total;
@@ -192,49 +243,53 @@ export default {
     addYunClose() {
       this.isAddYun = false;
     },
-    editYunClose(){
-        this.isEditYun = false;
+    editYunClose() {
+      this.isEditYun = false;
     },
     addYunNo(formName) {
       this.isAddYun = false;
       this.$refs[formName].resetFields();
-      this.fileList = []
+      this.fileList = [];
     },
-    editYunNo(formName){
-        this.isEditYun = false
-        this.$refs[formName].resetFields();
-        this.fileList2 = []
+    editYunNo(formName) {
+      this.isEditYun = false;
+      this.$refs[formName].resetFields();
+      this.fileList2 = [];
     },
     // 新增提交
-   addYunOk(formName) {
-       let _this = this
-        console.log(this.addYunFrom) 
-        this.$refs[formName].validate( async valid => {
+    addYunOk(formName) {
+      let _this = this;
+      console.log(this.addYunFrom);
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-            
-            console.log('满足条件', _this.targetDataForm)
-            const { data: res } = await this.$http.post('/faceCamera/addFaceCamera', null, { params: _this.targetDataForm })
-            console.log(res)
-            if(res.code == 1000){
-                this.$message({
-                    message: '添加成功',
-                    type: 'success'
-                })
-                this.targetDataForm = {
-                    eName: "",
-                    eIp: "",
-                    communityName: "",
-                    location: ""
-                }
-                this.isAddYun = false
-            }else{
-                 this.$message({
-                    message: '添加失败',
-                    type: 'danger'
-                })
-            }
-          
-        //   
+          console.log("满足条件", _this.targetDataForm);
+          const {
+            data: res
+          } = await this.$http.post("/faceCamera/addFaceCamera", null, {
+            params: _this.targetDataForm
+          });
+          console.log(res);
+          if (res.code == 1000) {
+            this.$message({
+              message: "添加成功",
+              type: "success"
+            });
+            this.targetDataForm = {
+              eName: "",
+              eIp: "",
+              communityName: "",
+              location: ""
+            };
+            this.getData();
+            this.isAddYun = false;
+          } else {
+            this.$message({
+              message: "添加失败",
+              type: "danger"
+            });
+          }
+
+          //
         } else {
           this.$message({
             message: "Error",
@@ -245,23 +300,28 @@ export default {
       });
     },
     // 编辑提交
-    editYunOk(formName){
-        this.$refs[formName].validate( async valid => {
+    editYunOk(formName) {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-            console.log(this.isEditYun)
-            const { data: res } = await this.$http.post('/faceApply/checkFace', null, { params: this.editYunFrom })
-            console.log('审核返回数据', res)
-            if(res.code == 1000){
-              this.$message({
-                message: '审核成功',
-                type: 'success'
-              })
-              this.isEditYun = false
-              this.getData()
-             this.$refs[formName].resetFields();
-            }else{
-              this.$message('审核失败')
-            }
+          console.log(this.editYunFrom);
+          // return
+          const {
+            data: res
+          } = await this.$http.post("/faceCamera/editFaceCamera", null, {
+            params: this.editYunFrom
+          });
+          console.log("修改返回数据", res);
+          if (res.code == 1000) {
+            this.$message({
+              message: "修改成功",
+              type: "success"
+            });
+            this.isEditYun = false;
+            this.getData();
+            this.$refs[formName].resetFields();
+          } else {
+            this.$message("修改失败");
+          }
         } else {
           this.$message({
             message: "Error",
@@ -271,12 +331,41 @@ export default {
         }
       });
     },
-    editClick(scope){
-        console.log('scope', scope)
-        this.editYunFrom.id = scope.id
-        this.isEditYun = true
+    editClick(scope) {
+      console.log("scope", scope);
+      this.editYunFrom = scope;
+      this.isEditYun = true;
+    },
+    // 删除按钮
+    deleteClick(scope) {
+      this.$confirm("此操作将永久删除该房屋信息，是否继续？")
+        .then(async () => {
+          console.log(scope);
+          const { data: res } = await this.$http.post(
+            "/faceCamera/deleteFaceCamera",
+            null,
+            {
+              params: {
+                id: scope.id
+              }
+            }
+          );
+          console.log("删除返回", res);
+          if (res.code === 1001) {
+            this.$message.success("删除成功");
+            this.getData();
+          } else {
+            this.$message.error("删除失败");
+          }
+        })
+        .catch(() => {
+          this.$message({
+            message: "已取消",
+            type: "info"
+          });
+        });
     }
-  },
+  }
 };
 </script>
 <style lang="less" scoped>

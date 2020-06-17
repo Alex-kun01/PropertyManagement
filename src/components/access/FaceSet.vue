@@ -18,49 +18,49 @@
             border
             style="width: 100%"
             >
-                <el-table-column type="index" label="#"  align="center" width="40px"></el-table-column>
-                <el-table-column prop="fId" label="人脸ID"  align="center" width="80px"></el-table-column>
-                <el-table-column prop="userName" label="用户名称"  align="center" width="100px"></el-table-column>
-                <el-table-column prop="comName" label="公司名称"  align="center" width="130px"></el-table-column>
-                <el-table-column prop="faceType" label="人脸类型"  align="center" width="80px">
+                <el-table-column type="index" label="#"  align="center" ></el-table-column>
+                <el-table-column prop="id" label="人脸ID"  align="center"></el-table-column>
+                <el-table-column prop="userName" label="用户名称"  align="center" ></el-table-column>
+                <!-- <el-table-column prop="comName" label="公司名称"  align="center" width="130px"></el-table-column> -->
+                <el-table-column prop="faceType" label="人脸类型"  align="center">
                     <!-- 1-白名单，2-黑名单 -->
                     <template slot-scope="scope">
                         <span style="color: #53c553;" v-if="scope.row.faceType == 1">白名单</span>
                         <span style="color: #f00" v-if="scope.row.faceType == 2">黑名单</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="communityName"  align="center" label="小区名称" width="80px"></el-table-column>
-                <el-table-column prop="periodsName" label="期数名称"  align="center" width="80px"></el-table-column>
-                <el-table-column prop="buildingsName" label="栋数名称"  align="center" width="80"></el-table-column>
-                <el-table-column prop="addTime" label="添加时间"  align="center" width="170px">
+                <el-table-column prop="communityName"  align="center" label="小区名称"></el-table-column>
+                <!-- <el-table-column prop="periodsName" label="期数名称"  align="center" width="80px"></el-table-column> -->
+                <!-- <el-table-column prop="buildingsName" label="栋数名称"  align="center" width="80"></el-table-column> -->
+                <!-- <el-table-column prop="addTime" label="添加时间"  align="center">
                     <template slot-scope="scope">
                         {{timeChange(scope.row.addTime)}}
                     </template>
-                </el-table-column>
-                <el-table-column prop="imgUrl"  align="center" label="图片" width="150px">
+                </el-table-column> -->
+                <el-table-column prop="imgUrl"  align="center" label="图片">
                     <template slot-scope="scope">
                   <img
                     style="width: 100%; height: 100%; min-height:200px;"
-                    :src="'http://www.hbzayun.com/ACSystem' + scope.row.imgUrl"/>
+                    :src="scope.row.img"/>
                 </template>
                 </el-table-column>
-                <el-table-column prop="phone"  align="center" label="电话" width="120px"></el-table-column>
+                <el-table-column prop="phone"  align="center" label="电话"></el-table-column>
                 <el-table-column prop="sex" label="性别"  align="center" width="50px">
                     <template slot-scope="scope">
                         <span v-if="scope.row.sex == 1">男</span>
                         <span v-if="scope.row.sex == 2">女</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="state"  align="center" label="状态" width="100px">
+                <el-table-column prop="state"  align="center" label="状态">
                     <!-- 0-未注册，1-已注册 -->
                     <template slot-scope="scope">
                         <span style="color: #f00;" v-if="scope.row.state == 0">未注册</span>
                         <span style="color: #53c553;" v-if="scope.row.state == 1">已注册</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="note"  align="center" label="备注" width="100px"></el-table-column>
-                <el-table-column prop="ra"  align="center" label="房间号" width="100px"></el-table-column>
-                <el-table-column label="操作"  align="center" width="100px">
+                <!-- <el-table-column prop="note"  align="center" label="备注" width="100px"></el-table-column> -->
+                <!-- <el-table-column prop="ra"  align="center" label="房间号" width="100px"></el-table-column> -->
+                <el-table-column label="操作"  align="center">
                     <template slot-scope="scope">
                         <el-button @click="deleteFace(scope.row)" type="danger" size="mini"><i class="el-icon-delete"></i>删除</el-button>
                     </template>
@@ -226,20 +226,17 @@ export default {
        
 
         async getData(current, size){
-            const {data: res} = await this.$http.post('http://www.hbzayun.com/ACSystem/findAuditFace', null, {params: {
-                key:'e098214294ad13f23e16ae5ebecf970d',
-                token:'1bbd886460827015e5d605ed44252251',
-                state: 1,
-                pn: current, // 当前页
-                pageCount: size,  // 每页行数
+            const {data: res} = await this.$http.post('/faceImg/lookAllImgPass', null, {params: {
+                current: current,
+                size:size
             }})
             console.log(res)
-            if(res.code == 200){
-                this.showList = res.extend.data.list
-                this.total = res.extend.data.total
+            if(res.code == 1002){
+                this.showList = res.data.records
+                this.total = res.data.total
             }else{
                 this.$message({
-                    message: res.extend.error,
+                    message: res.msg,
                     type: 'danger'
                 })
             }
@@ -282,12 +279,11 @@ export default {
             this.$confirm('该操作将永久删除该条信息,是否继续？').then(()=>{
 
 
-                _this.$http.post('http://www.hbzayun.com/ACSystem/delFace',null,{params: {
-                    key:'e098214294ad13f23e16ae5ebecf970d',
-                    token:'1bbd886460827015e5d605ed44252251',
-                    fId: scope.fId
+                _this.$http.post('/faceImg/delFaceImg',null,{params: {
+                    id: scope.id
                 }}).then(res =>{
-                    if(res.data.code == 200){
+                    console.log('删除数据',res)
+                    if(res.data.code == 1000){
                         this.$message({
                             message: '删除成功',
                             type: 'success'
@@ -368,7 +364,7 @@ export default {
                     
                     // for(let key in this.addFaceIdFrom){
                     //     formData.append(key, this.addFaceIdFrom[key]) 
-                    // }
+                    // }    
                     const {data:res} = await this.$http.post('/faceImg/appAddFace', null, {params:this.addFaceIdFrom})
                     console.log('添加请求返回数据', res)
                     if(res.code === 1000){

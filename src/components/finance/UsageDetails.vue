@@ -1,28 +1,29 @@
 <template>
   <div class="yunIntercom_box">
     <div class="yunIntercom">
-      <!-- 角色管理 -->
+      <!-- 公司管理 -->
       <el-breadcrumb style="margin-bottom: 10px;" separator-class="el-icon-arrow-right">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-        <el-breadcrumb-item>角色管理</el-breadcrumb-item>
+        <el-breadcrumb-item>财务管理</el-breadcrumb-item>
+        <el-breadcrumb-item>房屋管理</el-breadcrumb-item>
+        <el-breadcrumb-item>使用明细</el-breadcrumb-item>
       </el-breadcrumb>
 
       <el-button @click="isAddYun = true" style="margin-bottom:10px;" type="primary">新增</el-button>
 
-      <!-- 展示列表 -->
+      <!-- 云对讲列表 -->
       <template>
         <el-table :data="targetData" border style="width: 100%">
           <el-table-column type="index" label="#" align="center"></el-table-column>
-          <!-- <el-table-column prop="id" label="id" align="center"></el-table-column> -->
-          <el-table-column prop="roleName" label="角色" align="center"></el-table-column>
-          <el-table-column prop="publishTime" label="添加时间" align="center"></el-table-column>
-           <el-table-column prop="canUse" label="是否可用" align="center">
+          <el-table-column prop="houseId" label="房屋id" align="center"></el-table-column>
+          <el-table-column prop="type" label="收费类型" align="center"></el-table-column>
+          <el-table-column prop="measure" label="数量" align="center"></el-table-column>
+          <!-- <el-table-column prop="state" label="状态" align="center">
               <template slot-scope="scope">
                   <span v-if="scope.row.canUse == 1">可用</span>
                   <span v-else>不可用</span>
               </template>
-          </el-table-column>
+          </el-table-column> -->
 
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
@@ -55,27 +56,33 @@
         label-width="100px"
         class="addpolice_from"
       >
-         <el-form-item label="角色" prop="roleName">
-           <el-input type="roleName" v-model="targetDataForm.roleName" autocomplete="off"></el-input>
+
+         <!-- <el-form-item label="房屋id" prop="houseId">
+           <el-input type="houseId" v-model="targetDataForm.houseId" autocomplete="off"></el-input> -->
+             <!-- <el-select v-model="addpvalue" placeholder="请选择">
+                <el-option
+                v-for="item in addpolicecomName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select> -->
+         <!-- </el-form-item> -->
+
+         <el-form-item label="数量" prop="measure">
+           <el-input type="number" v-model="targetDataForm.measure" autocomplete="off"></el-input>
          </el-form-item>
-         <el-form-item label="是否可用" prop="canUse">
-           <!-- <el-input type="canUse" v-model="targetDataForm.canUse" autocomplete="off"></el-input> -->
-           <el-select v-model="targetDataForm.canUse" placeholder="选择">
-              <el-option label="可用" value="1"></el-option>
-              <el-option label="不可用" value="2"></el-option>
+
+         <el-form-item label="收费类型" prop="type">
+           <!-- <el-input type="type" v-model="targetDataForm.type" autocomplete="off"></el-input> -->
+           <el-select v-model="addpvalue" placeholder="请选择">
+                <el-option
+                v-for="item in addpolicecomName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
             </el-select>
-         </el-form-item>
-
-         <el-form-item label="菜单名" prop="menuName">
-
-           <el-select v-model="addpvalue" multiple placeholder="请选择">
-            <el-option
-              v-for="item in addpolicecomName"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
          </el-form-item>
 
         </el-form>
@@ -96,39 +103,34 @@
           label-width="100px"
           class="addpolice_from"
         >
-        <el-form-item label="id" prop="id">
-           <el-input disabled type="id" v-model="editYunFrom.id" autocomplete="off"></el-input>
-         </el-form-item>
-        <el-form-item label="角色" prop="roleName">
-           <el-input type="roleName" v-model="editYunFrom.roleName" autocomplete="off"></el-input>
-         </el-form-item>
-         <el-form-item label="是否可用" prop="canUse">
-           <!-- <el-input type="canUse" v-model="editYunFrom.canUse" autocomplete="off"></el-input> -->
-           <!-- <el-select v-model="editYunFrom.canUse" placeholder="选择">
-              <el-option label="是" value="1"></el-option>
-              <el-option label="否" value="2"></el-option>
-            </el-select> -->
-             <el-select v-model="addpvalue7"  placeholder="请选择">
-              <el-option
-                v-for="item in addpolicecomName7"
+          <!-- <el-form-item label="房屋id" prop="houseId">
+           <el-input type="communityName" v-model="targetDataForm.houseId" autocomplete="off"></el-input> -->
+             <!-- <el-select v-model="addpvalue" placeholder="请选择">
+                <el-option
+                v-for="item in addpolicecomName"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
-              </el-option>
+                </el-option>
+            </el-select> -->
+         <!-- </el-form-item> -->
+
+         <el-form-item label="价格" prop="measure">
+           <el-input type="number" v-model="editYunFrom.measure" autocomplete="off"></el-input>
+         </el-form-item>
+
+         <el-form-item label="收费类型" prop="type">
+           <!-- <el-input type="type" v-model="editYunFrom.type" autocomplete="off"></el-input> -->
+           <el-select v-model="addpvalue" placeholder="请选择">
+                <el-option
+                v-for="item in addpolicecomName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
             </el-select>
          </el-form-item>
 
-         <el-form-item label="菜单名" prop="menuName">
-
-           <el-select v-model="addpvalue" multiple placeholder="请选择">
-            <el-option
-              v-for="item in addpolicecomName"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-         </el-form-item>
 
         </el-form>
 
@@ -146,76 +148,73 @@
 export default {
   data() {
     return {
-       addpvalue7: '',
-       addpolicecomName7: [
-         {
-           value: 1,
-           label: '是'
-         },
-         {
-           value: 2,
-           label: '否'
-         }
-       ],
       size: 10, // 一页显示条数
       pages: 1, //总页数
       current: 1, // 当前页码
       total: 0, // 总共条数
       targetData: [], // 渲染数据
       isAddYun: false, // 是否展示新增对话框
-       addpvalue: [],
-       addpolicecomName: [], // 菜单列表
-      
+      addpvalue: '', 
+      houseId: '',
+      addpolicecomName: [],
       targetDataForm: {
-        roleName: "",
-        canUse: '',
-        menuIds: ''
+        // id: 1,
+        houseId: '',
+        measure: '',
+        type: '',
       },
       targetDataRules: {
-        menuName: [
+        houseId: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        eIp: [
+        measure: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        communityName: [
+        type: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        location: [
-          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
-        ]
       },
       isEditYun: false, // 编辑
       editYunFrom: {
         id: '',
-        roleName: "",
-        canUse: '',
-        menuIds: ''
+       houseId: '',
+        measure: '',
+        type: '',
       },
       editYunRules: {
         //新增数据规则
-        menuName: [
+        id: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
-        state: [
+        houseId: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        measure: [
+          { required: true, message: "此项不能为空，请填写", trigger: "blur" }
+        ],
+        type: [
           { required: true, message: "此项不能为空，请填写", trigger: "blur" }
         ],
       },
     };
   },
   mounted() {
-    this.getData();
-    this.getMenuList()
+    this.getComName();
+    
+    this.houseId = this.$route.params.id;
+    console.log('接受的id参数', this.houseId)
+    this.getData(this.houseId);
   },
   methods: {
-    async getData() { 
+    async getData(id) { 
       const { data: res } = await this.$http.post(
-        "/sysRole/getRoles", null, {params: {
+        "/useDetails/getUseDetailsPage", null, {params: {
+            houseId: id,
             current: this.current,
             size: this.size
         }}
       );
-      console.log("appface数据", res);
+      console.log("明细返回数据", res);
         // return
       if (res.code == 1003) {
         this.targetData = res.data.records;
@@ -227,26 +226,6 @@ export default {
           type: "danger"
         });
       }
-    },
-   async getMenuList(){
-     const {data:res} = await this.$http.get('/sysMenu/getMenusList')
-     console.log('获取所有菜单数据', res)
-     let menuArr = []
-     if(res.code === 1003){
-
-       res.data.forEach(item => {
-         let options = {
-              value: item.id,
-              label: item.menuName
-          }
-          menuArr.push(options)
-       })
-       
-
-
-       this.addpolicecomName = menuArr
-       console.log('转换后',this.addpolicecomName)
-     }
     },
     // 每页显示条数变化
     handleSizeChange(newSize) {
@@ -271,81 +250,99 @@ export default {
     },
     editYunNo(formName){
         this.isEditYun = false
-        // this.$refs[formName].resetFields();
-        // this.fileList2 = []
+        this.$refs[formName].resetFields();
+        this.fileList2 = []
     },
     // 新增提交
    async addYunOk(formName) {
        let _this = this
-       let newStr = this.addpvalue.join(',')
-       this.targetDataForm.menuIds = newStr 
+       if(!this.houseId) {
+           this.$message.error('刷新页面数据丢失，请重新进入此页面')
+           return
+       }
+       this.targetDataForm.houseId = this.houseId
+       this.targetDataForm.type = this.addpvalue
        console.log(this.targetDataForm) 
-      //  return
-       const {data: res} = await this.$http.post('/sysRole/addorupdate',null, {params:this.targetDataForm})
+    //    return
+       const {data: res} = await this.$http.post('/useDetails/addorupdate',null, {params:this.targetDataForm})
        console.log('新增返回数据', res)
        if(res.code === 1001){
            this.$message.success('添加成功')
-           this.getData()
+           this.getData(this.houseId)
            this.isAddYun = false
+            
        }else{
            this.$message.error('添加失败')
             this.isAddYun = false
        }
+       this.addpvalue = ''
     },
     // 编辑提交
     async editYunOk(formName){
         console.log('编辑',  this.editYunFrom)
-        let newStr = this.addpvalue.join(',')
-       this.editYunFrom.menuIds = newStr 
-       delete this.editYunFrom.sysMenuList
-       this.editYunFrom.canUse = this.addpvalue7
-       console.log('参数', this.editYunFrom)
-      //  return
-       const {data: res} = await this.$http.post('/sysRole/addorupdate',null, {params: this.editYunFrom})
+         this.editYunFrom.type = this.addpvalue
+        // return
+       const {data: res} = await this.$http.post('/useDetails/addorupdate',null, {params: this.editYunFrom})
        console.log('修改返回数据', res)
        if(res.code === 1001){
            this.$message.success('修改成功')
-           this.getData()
+           this.getData(this.houseId)
            this.isEditYun = false
+           this.addpvalue = ''
        }else{
            this.$message.error('修改失败')
             this.isEditYun = false
        }
+       this.addpvalue = ''
     },
-    //编辑按钮
+    // 编辑按钮
     editClick(scope){
         console.log('scope', scope)
-        // return
-        
+        this.addpvalue = scope.type
         this.editYunFrom = scope
-       
-        let newArr = []
-        let roles = scope.sysMenuList || {}
-        console.log('roles', roles)
-        if(roles[0] != null){
-          for(let key in roles){
-            newArr.push(roles[key].id)
-          }
-        }
-        
-        this.addpvalue = newArr
-         this.addpvalue7 = scope.canUse
-
         console.log(this.editYunFrom, 'xxx')
         this.isEditYun = true
     },
     // 删除按钮
-   async deleteClick(scope){
-      console.log('删除',scope)
-     const {data:res} = await this.$http.post('/sysRole/delete', null, {params: {roleId: scope.id}})
-     console.log('删除后',res)
-     if(res.code === 1001){
-       this.$message.success('删除成功')
-       this.getData()
-     }else{
-       this.$message.error('删除失败')
-     }
-    }
+    deleteClick(scope){
+       this.$confirm("此操作将永久删除该条数据，是否继续？")
+        .then(async () => {
+          console.log('删除',scope)
+            const {data:res} = await this.$http.post('/useDetails/delete', null, {params: {id: scope.id}})
+            console.log('删除后',res)
+            if(res.code === 1001){
+            this.$message.success('删除成功')
+            this.getData(this.houseId)
+            }else{
+            this.$message.error('删除失败')
+            }
+        })
+        .catch(() => {
+          this.$message({
+            message: "已取消",
+            type: "info"
+          });
+        });
+      
+    },
+    // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.post('/expenseCategory/getExpenseCategoryList')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.type,
+                    label: item.type
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName = dataArr
+            console.log('小区列表', this.addpolicecomName)
+        },
   },
 };
 </script>

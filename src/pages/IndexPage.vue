@@ -77,6 +77,41 @@
                                 机动车收费标准
                             </el-menu-item>
                         </router-link>
+
+                        <router-link :to="{name: 'costcategory'}">
+                            <el-menu-item index="1-6">
+                                <i class="el-icon-info"></i>  
+                                费用类别设置
+                            </el-menu-item>
+                        </router-link>
+
+                        <router-link :to="{name: 'arrearsdetails'}">
+                            <el-menu-item index="1-7">
+                                <i class="el-icon-s-finance"></i>  
+                                欠费明细
+                            </el-menu-item>
+                        </router-link>
+
+                        <router-link :to="{name: 'advancepayment'}">
+                            <el-menu-item index="1-8">
+                                <i class="el-icon-s-marketing"></i>  
+                                预交费管理
+                            </el-menu-item>
+                        </router-link> 
+                        
+                        <router-link :to="{name: 'livingexpenses'}">
+                            <el-menu-item index="1-9">
+                                <i class="el-icon-s-help"></i>  
+                                生活费管理
+                            </el-menu-item>
+                        </router-link> 
+
+                        <router-link :to="{name: 'ticketlist'}">
+                            <el-menu-item index="1-10">
+                                <i class="el-icon-edit-outline"></i>  
+                                票据管理
+                            </el-menu-item>
+                        </router-link> 
                             
                         
                     </el-submenu>
@@ -96,6 +131,10 @@
                                 <i class="el-icon-s-flag"></i>
                                 保安列表
                                 </el-menu-item></router-link>
+                                <router-link :to="{name: 'policerepair'}"><el-menu-item index="2-2">
+                                <i class="el-icon-s-flag"></i>
+                                保安报修
+                                </el-menu-item></router-link>
                         
                     </el-submenu>
 
@@ -110,10 +149,18 @@
                                 <i class="el-icon-office-building"></i>
                                 房屋列表
                                 </el-menu-item></router-link>
-                            <router-link :to="{name: 'repairlist'}"><el-menu-item index="3-2">
-                                <i class="el-icon-brush"></i>
-                                报修列表
-                                </el-menu-item></router-link>
+
+                            <router-link :to="{name: 'repairlist'}">
+                                <el-menu-item index="3-2" id="showyuan">
+                                    <i class="el-icon-brush"></i>
+                                    报修列表
+                                    <div class="yuan"
+                                    v-if="isRedDianShow"
+                                    ></div>
+                                </el-menu-item>
+                            </router-link>
+
+
                             <router-link :to="{name: 'housingshen'}"><el-menu-item index="3-3">
                                 <i class="el-icon-school"></i>
                                 房屋审核
@@ -227,6 +274,11 @@
                                 <i class="el-icon-bicycle"></i>
                                 非机动车管理
                                 </el-menu-item></router-link>
+
+                                 <router-link :to="{name: 'parkingset'}"><el-menu-item index="7-3">
+                                <i class="el-icon-odometer"></i>
+                                    停车场管理
+                                </el-menu-item></router-link>
                             
                     </el-submenu>
 
@@ -294,7 +346,15 @@ export default {
             isFold: false, // 菜单是否折叠
             authority: [], //  权限
             role: 1, // 超级管理员
+            isRedDianShow: false, // 是否显示红点 
+            websock: null, 
         }
+    },
+    created() {
+      this.init();
+    },
+    destroyed() {
+    //   this.websock.close() //离开路由之后断开websocket连接
     },
     mounted() {
         this.number = window.localStorage.getItem('userName')
@@ -309,9 +369,49 @@ export default {
        console.log('查看权限是否存在',newArr.includes('财务管理'))
     },
     methods: {
+        init() { //    192.168.31.142:8091
+            let url = 'ws://47.108.80.252:8091/imserver'
+            // 创建websocket连接
+            this.websock = new WebSocket(url);
+        　　　　// 监听打开
+            this.websock.onopen= this.websockOpen;
+        　　　　// 监听关闭
+            this.websock.onclose = this.websockClose;
+        　　　　//监听异常
+            this.websock.onerror = this.websockError;
+        　　　　//监听服务器发送的消息
+            this.websock.onmessage = this.websockMessage;
+        },
+        websockOpen(e){
+            console.log('监听打开', e)
+            let data = {
+                userName: window.localStorage.getItem('userName')
+            }
+            console.log('this.websock',this.websock, data)
+            this.websock.send(JSON.stringify(data))
+        },
+        websockClose(){
+            console.log('监听关闭')
+        },
+        websockError(){
+         console.log('监听异常')
+        },
+        websockMessage(e){
+            console.log('监听服务器发送的消息',JSON.parse(e.data))
+            if(JSON.parse(e.data).message == "有业主报修待处理"){
+                this.isRedDianShow = true
+            }else{
+                this.isRedDianShow = false
+            }
+        },
+
         // 选中菜单
         select(index){
-            console.log(index)
+            console.log('选中',index)
+            // 改变是否查看报修列表
+            // if(index == '3-2'){
+            //     this.isRedDianShow = false
+            // }
         },
         // 管理菜单
         handleClose(index){
@@ -356,6 +456,19 @@ html,
 body{
     width: 100%;
     height: 100%;
+    #showyuan{
+        position: relative;
+        .yuan{
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+            right: 5px;
+            top: calc(50% - 5px);
+        }
+    }
+
     .index_page{
         height: 100%;
         .el-container{

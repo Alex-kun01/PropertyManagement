@@ -1,12 +1,12 @@
 <template>
     <div class="repairlist_box">
-        <!-- 报修列表 -->
+        <!-- 保安报修 -->
         <div class="repair">
             
             <el-breadcrumb style="margin-bottom: 10px;" separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item>首页</el-breadcrumb-item>
-                <el-breadcrumb-item>房屋管理</el-breadcrumb-item>
-                <el-breadcrumb-item>报修列表</el-breadcrumb-item>
+                <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+                <el-breadcrumb-item>保安报修</el-breadcrumb-item>
             </el-breadcrumb>
 
             <template>
@@ -19,41 +19,21 @@
                         <el-table-column type="index" label="#" align="center"></el-table-column>
                         <el-table-column prop="img" label="图片" align="center">
                             <template slot-scope="scope">
-                                <img style="width: 40px; height:40px;" :src="scope.row.img">
+                                <img style="max-width: 100px; max-height:100px;" :src="scope.row.img">
                             </template>
                         </el-table-column>
-                        <el-table-column prop="isDel" label="是否删除" align="center" >
+                        <el-table-column prop="policeId" label="保安id" align="center"></el-table-column>
+                        <el-table-column prop="publishTime" label="报修时间" align="center"></el-table-column>
+                        <el-table-column prop="state" label="状态" width="180" align="center">
                             <template slot-scope="scope">
-                                <span v-if="scope.row.isDel == 1">未删除</span>
-                                <span style="color: #f00" v-if="scope.row.isDel == 0">已删除</span>
+                                <span  style="color: #53c553;" v-if="scope.row.state == 1">已处理</span>
+                                <span v-if="scope.row.state == 0">未处理</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="reason" label="报修原因" align="center"></el-table-column>
-                        <el-table-column prop="repairName" label="修理人" align="center"></el-table-column>
-                        <el-table-column prop="repairNumber" label="报修编号" width="180" align="center"></el-table-column>
-                        <el-table-column prop="repairTelephone" label="修理人电话" width="180" align="center"></el-table-column>
-                        <el-table-column prop="repairTime" label="报修时间" width="180" align="center"></el-table-column>
-                        <el-table-column prop="reportName" label="上报人" align="center"></el-table-column>
-                        <el-table-column prop="reportTelephone" label="上报人电话" width="120" align="center"></el-table-column>
-                        <el-table-column prop="publishTime" label="上报时间" width="180" align="center"></el-table-column>
-                        <el-table-column prop="status" label="状态" align="center">
-                            <template slot-scope="scope">
-                                <!--   0---已提交  1---已接单   2----已修好,待评价  3----已评价 -->
-                                <span v-if="scope.row.status == 0">已提交</span>
-                                <span style="color: #f40;"  v-if="scope.row.status == 1">已接单</span>
-                                <span style="color: #53c553;"  v-if="scope.row.status == 2">已修好,待评价</span>
-                                <span style="color: #999;" v-if="scope.row.status == 3">已评价</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="userId" label="用户ID" align="center" width="0"></el-table-column>
-                        <el-table-column prop="wishRepairTime" label="期望维修时间" align="center" width="180"></el-table-column>
 
                         <el-table-column label="操作" align="center" width="100">
                             <template slot-scope="scope">
-                                <el-button v-if="scope.row.status == 0" type="primary" @click="editrepair(scope.row)" size="mini"><i class="el-icon-edit"></i>处理</el-button>
-                                <el-button v-if="scope.row.status == 1" type="warning" @click="repairOk(scope.row)" size="mini">
-                                    <i class="el-icon-s-check"></i>
-                                    确认</el-button>
+                                <el-button type="primary" @click="editrepair(scope.row)" size="mini"><i class="el-icon-edit"></i>处理</el-button>
                             </template>
                         </el-table-column>
 
@@ -120,6 +100,7 @@ export default {
         return {
             size: 10,
             current: 1,
+            policeId: '',
             total: 10,
             repairList: [],
             showList: [],
@@ -142,9 +123,10 @@ export default {
     },
     methods: {
         getData(){
-            this.$http.get('/repair/lookRepairOrder', { params: {
+            this.$http.post('/fault/lookAllFault', { params: {
                 current: this.current,
-                size: this.size
+                size: this.size,
+                policeId: this.policeId
             }}).then(res => {
                 console.log(res.data)
                 this.total = res.data.data.total
@@ -152,17 +134,11 @@ export default {
             })
         },
         // 处理报修单
-        editrepair(scope){
-            this.editReparFrom.repairId = scope.id
-            this.editReparFrom.reason = scope.reason
-            this.isEditRepar = true
-        },
-        // 确认处理
-    repairOk(scope) {
+    editrepair(scope) {
       this.$confirm("确认已处理此条报修，是否继续？")
         .then(() => {
           this.$http
-            .post("/repair/guaranteeFinish", null, { params: { repairId: scope.id } })
+            .post("/fault/dealFault", null, { params: { defaultId: scope.id } })
             .then(res => {
               if (res.data.code == 1000) {
                 this.$message({
