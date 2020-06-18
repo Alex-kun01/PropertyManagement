@@ -20,6 +20,15 @@
           <el-table-column prop="publishTime" label="添加时间" align="center"></el-table-column>
           <el-table-column prop="name" label="姓名" align="center"></el-table-column>
           <el-table-column prop="account" label="账户" align="center"></el-table-column>
+          <el-table-column prop="comFeeId" label="小区id" align="center"></el-table-column>
+
+          <el-table-column prop="userRole" label="管理员" align="center">
+             <template slot-scope="scope">
+                  <span v-if="scope.row.userRole == 1">总管理员</span>
+                  <span v-if="scope.row.userRole == 2">公司管理员</span>
+                  <span v-if="scope.row.userRole == 3">小区管理员</span>
+              </template>
+          </el-table-column>
 
           <el-table-column prop="canUse" label="状态" align="center">
               <template slot-scope="scope">
@@ -86,7 +95,6 @@
          </el-form-item>
 
          <el-form-item label="角色" prop="roleIds">
-           <!-- <el-input type="roleIds" v-model="targetDataForm.roleIds" autocomplete="off"></el-input> -->
            <el-select v-model="addpvalue1" multiple placeholder="请选择">
             <el-option
               v-for="item in addpolicecomName1"
@@ -97,11 +105,36 @@
           </el-select>
          </el-form-item>
 
-          <el-form-item label="公司" prop="companyId">
-           <!-- <el-input type="comId" v-model="targetDataForm.comId" autocomplete="off"></el-input> -->
-           <el-select v-model="addpvalue2" placeholder="请选择">
+         <el-form-item label="管理员">
+           <el-select v-model="addpvalue3" placeholder="请选择管理员">
+            <el-option
+              v-for="item in addpolicecomName3"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+         </el-form-item>
+
+          <el-form-item label="公司"
+          v-if="addpvalue3 == 2 || isUserRole == 1"
+          >
+           <el-select :disabled="isSelect" v-model="addpvalue2" placeholder="请选择">
               <el-option
               v-for="item in addpolicecomName2"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+              </el-option>
+          </el-select>
+         </el-form-item>
+
+         <el-form-item label="小区"
+         v-if="userRole == 2 || isUserRole == 1"
+         >
+           <el-select  v-model="addpvalue4" placeholder="请选择">
+              <el-option
+              v-for="item in addpolicecomName4"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -167,11 +200,36 @@
           </el-select>
          </el-form-item>
 
-          <el-form-item label="公司" prop="companyId">
-           <!-- <el-input type="comId" v-model="targetDataForm.comId" autocomplete="off"></el-input> -->
-           <el-select v-model="addpvalue2" placeholder="请选择">
+          <el-form-item label="管理员">
+           <el-select v-model="addpvalue3" placeholder="请选择管理员">
+            <el-option
+              v-for="item in addpolicecomName3"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+         </el-form-item>
+
+          <el-form-item label="公司"
+          v-if="addpvalue3 == 2 || isUserRole == 1"
+          >
+           <el-select :disabled="isSelect" v-model="addpvalue2" placeholder="请选择">
               <el-option
               v-for="item in addpolicecomName2"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+              </el-option>
+          </el-select>
+         </el-form-item>
+
+         <el-form-item label="小区"
+         v-if="isUserRole == 1"
+         >
+           <el-select  v-model="addpvalue4" placeholder="请选择">
+              <el-option
+              v-for="item in addpolicecomName4"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -203,17 +261,40 @@ export default {
       targetData: [], // 渲染数据
       isAddYun: false, // 是否展示新增对话框
       addpvalue1: [],
+      userRole: '', // 用户管理员
+      companyId: '', // 本公司id
+      compName: '', // 本公司名
+      isSelect: false, // 是否可以选择
       addpvalue2: '',
+      addpvalue3: '', // 选择的管理员
+      addpvalue4: '',
       addpolicecomName1: [], // 角色列表1
-      addpolicecomName2: [], // 权限列表1
+      addpolicecomName2: [], // 公司列表1
+      addpolicecomName4:[],  // 小区
+      addpolicecomName3: [
+          {
+            value: 1,
+            label: '总管理员'
+          },
+          {
+            value: 2,
+            label: '公司管理员'
+          },
+          {
+            value: 3,
+            label: '小区管理员'
+          }
+      ],
       targetDataForm: {
         userName: "",
         password: "",
-        canUse: 1,
+        canUse: '',
         name: '',
         account: '',
         roleIds: '',
         companyId: '',
+        userRole: '',
+        comFeeId: ''
       },
       targetDataRules: {
         eName: [
@@ -235,11 +316,13 @@ export default {
         userName: "",
         password: "",
         role: 1,
-        canUse: 1,
+        canUse: '',
         name: '',
         account: '',
         roleIds: '',
-        companyId: ''
+        companyId: '',
+        userRole: '',
+        comFeeId: ''
       },
       editYunRules: {
         //新增数据规则
@@ -256,6 +339,24 @@ export default {
     this.getData();
     this.getRoleList()
     this.getComList()
+    this.getComName()
+    this.userRole = window.localStorage.getItem('userRole')
+    this.companyId = window.localStorage.getItem('companyId')
+    this.getComyApply()
+  },
+  computed:{
+    isUserRole(){
+      if(this.addpvalue3 == 3){
+        if(this.userRole != 1){
+          // 判断不为总管理员
+          this.addpvalue2 = this.compName
+          this.isSelect = true
+        }
+        return 1
+      }else{
+        return 2
+      }
+    }
   },
   methods: {
     async getData() { 
@@ -276,6 +377,17 @@ export default {
           message: "服务器请求出错",
           type: "danger"
         });
+      }
+    },
+    // 根据公司id查询公司名
+   async getComyApply(){
+      let _this = this
+      const {data:res} = await this.$http.post('/comyApply/getComyApply', null, {params: {comyApplyId: this.companyId}})
+      console.log('获取到的公司', res)
+      if(res.code === 1003){
+        this.compName = res.data.compName
+      }else{
+        this.$message.error('默认公司获取失败')
       }
     },
     // 获取角色列表 
@@ -352,13 +464,21 @@ export default {
        console.log(this.targetDataForm) 
         let newStr = this.addpvalue1.join(',')
        this.targetDataForm.roleIds = newStr 
-       this.targetDataForm.companyId = this.addpvalue2
+            
+       if(this.userRole == 1){
+         this.targetDataForm.companyId = this.companyId
+       }else{
+          this.targetDataForm.companyId = this.addpvalue2
+       }
+       this.targetDataForm.userRole = this.addpvalue3
+       this.targetDataForm.comFeeId = this.addpvalue4
        delete this.editYunFrom.role
        delete this.editYunFrom.publishTime
        delete this.editYunFrom.sysMenus
        delete this.editYunFrom.sysRoles
        delete this.editYunFrom.sysRoleArray
        delete this.editYunFrom.comyApply
+       
        
        console.log('xxYy',  this.targetDataForm)
       //  return
@@ -368,6 +488,21 @@ export default {
            this.$message.success('添加成功')
            this.getData()
            this.isAddYun = false
+           this.addpvalue1 = ''
+           this.addpvalue2 = ''
+           this.addpvalue3 = ''
+           this.addpvalue4 = ''
+           this.targetDataForm = {
+             userName: "",
+            password: "",
+            canUse: '',
+            name: '',
+            account: '',
+            roleIds: '',
+            companyId: '',
+            userRole: '',
+            comFeeId: ''
+           }
        }else{
            this.$message.error('添加失败')
             this.isAddYun = false
@@ -378,7 +513,13 @@ export default {
         console.log('编辑',  this.editYunFrom)
         let newStr = this.addpvalue1.join(',')
        this.editYunFrom.roleIds = newStr 
-       this.editYunFrom.companyId = this.addpvalue2
+       if(this.userRole == 1){
+         this.editYunFrom.companyId = this.companyId
+       }else{
+          this.editYunFrom.companyId = this.addpvalue2
+       }
+       this.editYunFrom.userRole = this.addpvalue3
+       this.editYunFrom.comFeeId = this.addpvalue4
        console.log('编辑提交', this.editYunFrom)
        delete this.editYunFrom.role
        delete this.editYunFrom.publishTime
@@ -394,16 +535,38 @@ export default {
            this.$message.success('修改成功')
            this.getData()
            this.isEditYun = false
+           this.addpvalue2 = ''
+           this.addpvalue3 = ''
+           this.addpvalue4 = ''
        }else{
            this.$message.error('修改失败')
             this.isEditYun = false
        }
     },
+    // 获取小区列表
+       async getComName(){
+            //addpolicecomName  communityName
+            const {data: res} = await this.$http.get('/house/changeCom')
+            console.log('请求小区列表', res.data)
+            let data = res.data || []
+            let dataArr = []
+            let index = 1
+            data.forEach(item=>{
+                let options = {
+                    value: item.id,
+                    label: item.communityName
+                }
+                dataArr.push(options)
+            })
+            this.addpolicecomName4 = dataArr
+            console.log('小区列表', this.addpolicecomName4 )
+        },
     editClick(scope){
         console.log('前scope', scope)
           if(scope.comyApply != null){
             this.addpvalue2 = scope.comyApply.id // 回显公司
           }
+          this.addpvalue3 = scope.userRole
             
         
         let newArr = []

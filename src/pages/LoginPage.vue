@@ -51,6 +51,8 @@ export default {
                     this.Authority = newArr
                     window.localStorage.setItem('authority',newArr)
                      window.localStorage.setItem('role',res.data.data.role)
+                     window.localStorage.setItem('userRole',res.data.data.userRole)
+                     window.localStorage.setItem('companyId',res.data.data.companyId) // 公司id
 
                     console.log('列表返回的数据',this.Authority)
                     this.$message({
@@ -59,6 +61,8 @@ export default {
                     })
                     window.localStorage.setItem('userName', this.userName)
                     window.localStorage.setItem('password', this.password)
+                    window.localStorage.setItem('userRole',res.data.data.userRole)
+                    window.localStorage.setItem('companyId',res.data.data.companyId)
                     this.$router.push('/index/firstshow')
                 }else{
                     this.$message({

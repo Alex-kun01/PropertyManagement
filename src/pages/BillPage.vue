@@ -62,12 +62,11 @@ export default {
       display: none;
   }
   .bill_box {
-    width: 700px;
+    margin:100px auto;
+    position: relative;
+    width: 800px;
     height: 450px;
     border: 1px solid black;
-    position: absolute;
-    top: calc(50% - 225px);
-    left: calc(50% - 350px);
     overflow: hidden;
     img {
       width: 100%;
