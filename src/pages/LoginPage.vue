@@ -41,7 +41,7 @@ export default {
         login(){
             if(this.userName && this.password){
                 this.$http.post('/sysUser/sysLogin', null, { params: {userName: this.userName, password: this.password} }).then(res => {
-                console.log(res,res.data.code, 'ppp')
+                console.log(res,res.data, 'ppp')
                 if(res.data.code == 1003 || res.data.code == 1001) {
                     let arr = res.data.data.sysMenus || []
                     let newArr = []
@@ -53,6 +53,7 @@ export default {
                      window.localStorage.setItem('role',res.data.data.role)
                      window.localStorage.setItem('userRole',res.data.data.userRole)
                      window.localStorage.setItem('companyId',res.data.data.companyId) // 公司id
+                     console.log('查看到的本地公司id', window.localStorage.getItem('companyId'))
 
                     console.log('列表返回的数据',this.Authority)
                     this.$message({

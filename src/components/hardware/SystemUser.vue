@@ -173,10 +173,19 @@
          </el-form-item>
 
          <el-form-item label="是否可用" prop="canUse">
-           <el-select v-model="editYunFrom.canUse" placeholder="选择">
+           <!-- <el-select v-model="editYunFrom.canUse" placeholder="选择">
               <el-option label="可用" value="1"></el-option>
               <el-option label="不可用" value="2"></el-option>
-            </el-select>
+            </el-select> -->
+            <el-select v-model="addpvalue8" placeholder="请选择">
+            <el-option
+              v-for="item in addpolicecomName8"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+              {{item.label}}
+            </el-option>
+          </el-select>
          </el-form-item>
 
          <el-form-item label="姓名" prop="name">
@@ -268,6 +277,7 @@ export default {
       addpvalue2: '',
       addpvalue3: '', // 选择的管理员
       addpvalue4: '',
+      addpvalue8: '', // 是否可用
       addpolicecomName1: [], // 角色列表1
       addpolicecomName2: [], // 公司列表1
       addpolicecomName4:[],  // 小区
@@ -284,6 +294,16 @@ export default {
             value: 3,
             label: '小区管理员'
           }
+      ],
+      addpolicecomName8:[
+        {
+          value: 1,
+          label: '是'
+        },
+        {
+          value: 2,
+          label: '否'
+        }
       ],
       targetDataForm: {
         userName: "",
@@ -315,7 +335,7 @@ export default {
         id: '',
         userName: "",
         password: "",
-        role: 1,
+        role: '',
         canUse: '',
         name: '',
         account: '',
@@ -353,7 +373,13 @@ export default {
           this.isSelect = true
         }
         return 1
-      }else{
+      }
+      if(this.addpvalue3 == 1){
+        this.addpvalue2 = ''
+        this.addpvalue4 = ''
+
+      }
+      else{
         return 2
       }
     }
@@ -382,13 +408,18 @@ export default {
     // 根据公司id查询公司名
    async getComyApply(){
       let _this = this
-      const {data:res} = await this.$http.post('/comyApply/getComyApply', null, {params: {comyApplyId: this.companyId}})
-      console.log('获取到的公司', res)
-      if(res.code === 1003){
-        this.compName = res.data.compName
+      if(typeof this.companyId != 'number'){
+        return
       }else{
-        this.$message.error('默认公司获取失败')
+        const {data:res} = await this.$http.post('/comyApply/getComyApply', null, {params: {comyApplyId: this.companyId}})
+        console.log('获取到的公司', res)
+        if(res.code === 1003){
+          this.compName = res.data.compName
+        }else{
+          this.$message.error('默认公司获取失败')
+        }
       }
+      
     },
     // 获取角色列表 
     async getRoleList(){
@@ -466,9 +497,9 @@ export default {
        this.targetDataForm.roleIds = newStr 
             
        if(this.userRole == 1){
-         this.targetDataForm.companyId = this.companyId
+         this.targetDataForm.companyId = this.addpvalue2
        }else{
-          this.targetDataForm.companyId = this.addpvalue2
+          this.targetDataForm.companyId = this.companyId
        }
        this.targetDataForm.userRole = this.addpvalue3
        this.targetDataForm.comFeeId = this.addpvalue4
@@ -513,11 +544,16 @@ export default {
         console.log('编辑',  this.editYunFrom)
         let newStr = this.addpvalue1.join(',')
        this.editYunFrom.roleIds = newStr 
+       this.editYunFrom.canUse = this.addpvalue8
        if(this.userRole == 1){
-         this.editYunFrom.companyId = this.companyId
+         console.log('role=1', this.companyId)
+         this.editYunFrom.companyId = this.addpvalue2
        }else{
-          this.editYunFrom.companyId = this.addpvalue2
+          this.editYunFrom.companyId = this.companyId
        }
+       console.log('查看role',this.userRole )
+       console.log('查看参数',this.editYunFrom )
+      //  return
        this.editYunFrom.userRole = this.addpvalue3
        this.editYunFrom.comFeeId = this.addpvalue4
        console.log('编辑提交', this.editYunFrom)
@@ -538,6 +574,7 @@ export default {
            this.addpvalue2 = ''
            this.addpvalue3 = ''
            this.addpvalue4 = ''
+           this.addpvalue8 = ''
        }else{
            this.$message.error('修改失败')
             this.isEditYun = false
@@ -546,7 +583,7 @@ export default {
     // 获取小区列表
        async getComName(){
             //addpolicecomName  communityName
-            const {data: res} = await this.$http.get('/house/changeCom')
+            const {data: res} = await this.$http.get('/comFee/getComFeeList')
             console.log('请求小区列表', res.data)
             let data = res.data || []
             let dataArr = []
@@ -567,6 +604,7 @@ export default {
             this.addpvalue2 = scope.comyApply.id // 回显公司
           }
           this.addpvalue3 = scope.userRole
+          this.addpvalue8 = scope.canUse
             
         
         let newArr = []
